@@ -1,0 +1,36 @@
+.card {
+  position: relative;
+  width: 240px;
+  height: 310px;
+  background-color: var(--secondary);
+  flex-shrink: 0;
+  clip-path: polygon(
+    25px 0,
+    100% 0,
+    100% calc(100% - 25px),
+    calc(100% - 25px) 100%,
+    0 100%,
+    0 25px
+  );
+}
+
+.imageWrapper {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  right: 5px;
+  bottom: 5px;
+  overflow: hidden;
+  clip-path: polygon(
+    21px 0,
+    100% 0,
+    100% calc(100% - 21px),
+    calc(100% - 21px) 100%,
+    0 100%,
+    0 21px
+  );
+}
+
+.image {
+  object-fit: cover;
+}

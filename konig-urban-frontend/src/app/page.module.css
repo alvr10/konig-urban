@@ -1,0 +1,589 @@
+.main {
+  width: 100vw;
+  overflow-x: hidden;
+}
+
+.heroSection {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background-color: var(--background);
+}
+
+.videoWrapper {
+  position: absolute;
+  top: -20%;
+  left: 0;
+  width: 100%;
+  height: 140%;
+  z-index: 0;
+}
+
+.heroVideo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    135deg,
+    rgba(49, 79, 100, 0.6) 0%,
+    rgba(49, 79, 100, 0.1) 50%,
+    rgba(49, 79, 100, 0.5) 100%
+  );
+}
+
+.content {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  padding: 10rem 4rem 3rem 4rem;
+}
+
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2.5rem 4rem;
+  z-index: 1000;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  background: transparent;
+}
+
+.headerScrolled {
+  padding: 1.5rem 4rem;
+  background: rgba(10, 10, 12, 0.8);
+  backdrop-filter: blur(10px);
+}
+
+.brand {
+  font-family: var(--font-druk-text-bold), sans-serif;
+  font-size: 2.5rem;
+  font-weight: 700;
+  letter-spacing: -2px;
+  text-transform: uppercase;
+}
+
+.nav {
+  display: flex;
+  gap: 3rem;
+  opacity: 0.9;
+}
+
+.actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.heroBody {
+  display: flex;
+  justify-content: space-between;
+  flex: 1;
+  margin-top: 5rem;
+  position: relative;
+}
+
+.leftCol {
+  flex: 0 0 35%;
+  display: flex;
+  flex-direction: column;
+  color: var(--text-accent);
+  padding-left: 1rem;
+}
+
+.seriesTag {
+  font-size: 0.8rem;
+  color: var(--secondary);
+  letter-spacing: 2px;
+  margin-bottom: 2rem;
+}
+
+.title {
+  font-family: var(--font-druk-text-bold), sans-serif;
+  font-size: 6.5rem;
+  line-height: 0.9;
+  font-weight: 700;
+  letter-spacing: -3px;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.optionsGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-top: 4rem;
+  font-size: 0.9rem;
+  letter-spacing: 1px;
+}
+
+.optionRow {
+  display: flex;
+  align-items: center;
+}
+
+.optionLabel {
+  color: var(--secondary);
+  width: 80px;
+}
+
+.optionValues {
+  display: flex;
+  gap: 2rem;
+}
+
+.optionValue {
+  cursor: pointer;
+  color: var(--secondary);
+  transition: color 0.3s;
+}
+
+.optionValue.active {
+  color: var(--text-accent);
+  text-decoration: underline;
+  text-underline-offset: 6px;
+  text-decoration-thickness: 1px;
+}
+
+.addToCartRow {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  margin-top: auto;
+  margin-bottom: 3rem;
+}
+
+.cartButton {
+  width: 90px;
+  height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: var(--text-accent);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  border: none;
+  isolation: isolate; /* Create a new stacking context */
+}
+
+.cartButton svg {
+  position: relative;
+  z-index: 2; /* Ensure icon is on top */
+}
+
+.cartButton::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  /* SVG Stroke for the octagon shape to show diagonal edges */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 90 90' fill='none'%3E%3Cpath d='M27 0.5 H63 L89.5 27 V63 L63 89.5 H27 L0.5 63 V27 Z' stroke='rgba(250, 251, 252, 0.5)' stroke-width='1'/%3E%3C/svg%3E");
+  background-size: 100% 100%;
+  transition: opacity 0.3s ease;
+  z-index: 1;
+}
+
+.cartButton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: var(--text-accent);
+  clip-path: polygon(
+    30% 0%,
+    70% 0%,
+    100% 30%,
+    100% 70%,
+    70% 100%,
+    30% 100%,
+    0% 70%,
+    0% 30%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 1; /* Above any card background, below the icon */
+}
+
+.cartButton:hover {
+  color: var(--primary);
+}
+
+.cartButton:hover::after {
+  opacity: 1;
+}
+
+.cartButton:hover::before {
+  opacity: 0;
+}
+
+.cartInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cartLabel {
+  font-size: 0.85rem;
+  color: var(--secondary);
+  letter-spacing: 1px;
+}
+
+.cartPrice {
+  font-size: 1.8rem;
+  font-weight: 500;
+  letter-spacing: 1px;
+}
+
+.centerCol {
+  flex: 1;
+}
+
+.rightCol {
+  flex: 0 0 30%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  position: relative;
+  padding-right: 1rem;
+}
+
+.cardsCarousel {
+  display: flex;
+  gap: 1.5rem;
+  overflow: visible;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+.pagination {
+  margin-top: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: var(--text-accent);
+  font-size: 0.8rem;
+  align-self: flex-start;
+  margin-left: 20%;
+}
+
+.paginationLine {
+  width: 60px;
+  height: 1px;
+  background-color: rgba(250, 251, 252, 0.4);
+  display: inline-block;
+}
+
+.socialIcons {
+  position: absolute;
+  bottom: 0;
+  right: 1rem;
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 3rem;
+}
+
+.collectionSection {
+  width: 100%;
+  padding: 6rem 4rem;
+  background-color: var(--primary);
+  color: var(--text-accent);
+  scroll-margin-top: 80px;
+}
+
+.collectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 3rem;
+  font-family: var(--font-ibm-plex-mono), monospace;
+}
+
+.collectionTitle {
+  font-family: var(--font-druk-text-bold), sans-serif;
+  font-size: 4.5rem;
+  font-weight: 700;
+  letter-spacing: -2px;
+  line-height: 1;
+  margin: 0;
+  flex: 1;
+}
+
+.collectionNavGroup {
+  display: flex;
+  flex: 1;
+  gap: 4rem;
+  font-size: 0.8rem;
+  line-height: 1.6;
+  letter-spacing: 1px;
+  color: var(--secondary);
+}
+
+.collectionTags,
+.collectionCategories {
+  display: flex;
+  flex-direction: column;
+}
+
+.collectionGrid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1.5rem;
+}
+
+.gridItem {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.gridItemWide {
+  grid-column: span 2;
+  position: relative;
+}
+
+.gridImageWrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  background-color: var(--secondary);
+  clip-path: polygon(
+    25px 0,
+    100% 0,
+    100% calc(100% - 25px),
+    calc(100% - 25px) 100%,
+    0 100%,
+    0 25px
+  );
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gridItemWide .gridImageWrapper {
+  aspect-ratio: unset;
+  height: 100%;
+}
+
+.gridImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.wideCardInnerImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  clip-path: polygon(
+    21px 0,
+    100% 0,
+    100% calc(100% - 21px),
+    calc(100% - 21px) 100%,
+    0 100%,
+    0 21px
+  );
+}
+
+.wideCardOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-end;
+  padding: 3rem;
+  pointer-events: none;
+}
+
+.wideCardOverlay h3 {
+  font-family: var(--font-druk-text-bold), sans-serif;
+  font-size: 3rem;
+  margin: 0 0 2rem 0;
+  letter-spacing: -1px;
+  text-align: right;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.wideCardAction {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  pointer-events: auto;
+}
+
+.wideCardPrice {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+}
+
+.wideCardPrice span:first-child {
+  font-size: 0.75rem;
+  letter-spacing: 1px;
+  color: var(--primary);
+}
+
+.wideCardPrice span:last-child {
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+.productInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.5px;
+  color: var(--secondary);
+}
+
+.productName {
+  color: var(--text-accent);
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.productDesc {
+  text-transform: uppercase;
+}
+
+.selectors {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.2rem;
+}
+
+.colorSelector {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+}
+
+.colorDotWrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+}
+
+.colorDotWrapper:hover {
+  opacity: 0.8;
+}
+
+.colorDotWrapper.activeColor {
+  opacity: 1;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.colorName {
+  font-size: 0.7rem;
+}
+
+.sizeSelector {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.sizeOption {
+  font-size: 0.7rem;
+  cursor: pointer;
+  padding: 0.2rem 0.4rem;
+  border: 1px solid rgba(250, 251, 252, 0.2);
+  transition: all 0.2s ease;
+}
+
+.sizeOption:hover {
+  border-color: rgba(250, 251, 252, 0.5);
+}
+
+.sizeOption.activeSize {
+  background-color: var(--text-accent);
+  color: var(--primary);
+  border-color: var(--text-accent);
+}
+
+.colorDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.productPrice {
+  margin-top: 0.3rem;
+  font-family: var(--font-ibm-plex-mono), monospace;
+}
+
+.gridItemCartBtn {
+  margin-top: 0.5rem;
+  background-color: rgba(250, 251, 252, 0.3); /* Border color */
+  padding: 1px; /* Border thickness */
+  width: 100%;
+  cursor: pointer;
+  border: none;
+  clip-path: polygon(
+    15px 0,
+    100% 0,
+    100% calc(100% - 15px),
+    calc(100% - 15px) 100%,
+    0 100%,
+    0 15px
+  );
+  display: flex;
+  align-items: stretch;
+}
+
+.gridItemCartBtnInner {
+  background-color: var(--primary); /* Inner background matching grid section */
+  color: var(--text-accent);
+  width: 100%;
+  padding: 0.6rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-ibm-plex-mono), monospace;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 1px;
+  clip-path: polygon(
+    14px 0,
+    100% 0,
+    100% calc(100% - 14px),
+    calc(100% - 14px) 100%,
+    0 100%,
+    0 14px
+  );
+  transition: all 0.3s ease;
+}
+
+.gridItemCartBtn:hover .gridItemCartBtnInner {
+  background-color: var(--text-accent);
+  color: var(--primary);
+}

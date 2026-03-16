@@ -1,0 +1,46 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--text-accent);
+  color: var(--primary);
+  border: none;
+  cursor: pointer;
+  min-width: 44px;
+  height: 44px;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  font-family: var(--font-ibm-plex-mono), monospace;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.button:hover {
+  background-color: var(--secondary);
+}
+
+.square {
+  border-radius: 4px;
+}
+
+.circle {
+  border-radius: 50%;
+}
+
+.hexagon {
+  clip-path: polygon(
+    10px 0%,
+    /* top-left: horizontal entry */ calc(100% - 10px) 0%,
+    /* top-right: horizontal entry */ 100% 10px,
+    /* top-right: vertical exit */ 100% calc(100% - 10px),
+    /* bottom-right: vertical entry */ calc(100% - 10px) 100%,
+    /* bottom-right: horizontal exit */ 10px 100%,
+    /* bottom-left: horizontal entry */ 0% calc(100% - 10px),
+    /* bottom-left: vertical exit */ 0% 10px /* top-left: vertical exit */
+  );
+}
+
+.button span,
+.button svg {
+  position: relative;
+}
