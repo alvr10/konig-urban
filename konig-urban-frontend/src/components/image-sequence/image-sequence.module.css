@@ -1,0 +1,150 @@
+.container {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background-color: var(--background);
+}
+
+.stickyWrapper {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.canvas {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(
+    circle at center,
+    transparent 0%,
+    rgba(10, 10, 12, 0.4) 100%
+  );
+  pointer-events: none;
+  z-index: 2;
+}
+
+.textOverlay {
+  position: absolute;
+  top: 50%;
+  left: 8%;
+  transform: translateY(-50%);
+  z-index: 10;
+  color: var(--text-accent);
+}
+
+.tag {
+  font-family: var(--font-ibm-plex-mono), monospace;
+  font-size: clamp(0.7rem, 1vw, 0.9rem);
+  letter-spacing: 0.4em;
+  color: var(--secondary);
+  margin-bottom: 2rem;
+  opacity: 0.8;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.tag::before {
+  content: "";
+  width: 40px;
+  height: 1px;
+  background-color: var(--secondary);
+}
+
+.title {
+  font-family: var(--font-druk-text-bold), sans-serif;
+  font-size: clamp(3.5rem, 12vw, 10rem);
+  line-height: 0.8;
+  text-transform: uppercase;
+  margin: 0;
+  letter-spacing: -3px;
+  filter: drop-shadow(0 0 30px rgba(0, 0, 0, 0.5));
+}
+
+.desc {
+  font-size: clamp(0.8rem, 1vw, 1rem);
+  max-width: 450px;
+  margin-top: 3rem;
+  color: var(--secondary);
+  line-height: 1.8;
+  opacity: 0.9;
+  border-left: 1px solid rgba(174, 199, 217, 0.3);
+  padding-left: 1.5rem;
+}
+
+.floatingText {
+  position: absolute;
+  z-index: 15;
+  font-family: var(--font-ibm-plex-mono), monospace;
+  color: var(--text-accent);
+  opacity: 0;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.floatingText.left {
+  left: 6%;
+}
+
+.floatingText.right {
+  right: 6%;
+  text-align: right;
+  align-items: flex-end;
+}
+
+.floatingLabel {
+  font-size: clamp(0.7rem, 1vw, 0.9rem);
+  color: var(--secondary);
+  letter-spacing: 5px;
+  margin-bottom: 0.8rem;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+.floatingValue {
+  font-family: var(--font-druk-text-bold), sans-serif;
+  font-size: clamp(1.5rem, 4vw, 3.5rem);
+  font-weight: 700;
+  letter-spacing: -1px;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.logoOverlay {
+  position: absolute;
+  top: 62%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  max-width: 1600px;
+  z-index: 20;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.logoIcon {
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.2));
+}
+
+.wipeContainer {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}

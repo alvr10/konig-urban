@@ -11,6 +11,7 @@ import { products, Product } from "../data/products";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Loader } from "../components/loader/loader";
+import { ImageSequence } from "../components/image-sequence/image-sequence";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -496,6 +497,12 @@ export default function Home() {
           ))}
         </div>
       </section>
+
+      <ImageSequence
+        frameCount={160}
+        basePath="/images/image-sequence/ezgif-frame-"
+        extension="png"
+      />
     </main>
   );
 }
