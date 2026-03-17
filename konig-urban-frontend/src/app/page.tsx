@@ -12,6 +12,13 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Loader } from "../components/loader/loader";
 import { ImageSequence } from "../components/image-sequence/image-sequence";
+import { Footer } from "../components/footer/footer";
+import {
+  InstagramIcon,
+  FacebookIcon,
+  TwitterIcon,
+  BagIcon,
+} from "../components/icons";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -98,68 +105,6 @@ function ProductGridItem({ product }: { product: Product }) {
   );
 }
 
-const BagIcon = () => (
-  <svg
-    width="18"
-    height="18"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-    <line x1="3" y1="6" x2="21" y2="6"></line>
-    <path d="M16 10a4 4 0 0 1-8 0"></path>
-  </svg>
-);
-
-const InstagramIcon = () => (
-  <svg
-    width="18"
-    height="18"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
-  </svg>
-);
-const FacebookIcon = () => (
-  <svg
-    width="18"
-    height="18"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
-  </svg>
-);
-const TwitterIcon = () => (
-  <svg
-    width="18"
-    height="18"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"></path>
-  </svg>
-);
-
 export default function Home() {
   const { toggleCart, addItem } = useCart();
   const [isScrolled, setIsScrolled] = useState(false);
@@ -176,6 +121,7 @@ export default function Home() {
   const leftColRef = useRef<HTMLDivElement>(null);
   const rightColRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLElement>(null);
+  const collectionRef = useRef<HTMLElement>(null);
 
   useLayoutEffect(() => {
     if (isLoading) return;
@@ -192,7 +138,10 @@ export default function Home() {
       });
 
       // 2. Entrance Animation (Timeline)
-      const tl = gsap.timeline({ defaults: { ease: "power4.out" } });
+      const tl = gsap.timeline({
+        defaults: { ease: "power4.out" },
+        onComplete: () => ScrollTrigger.refresh(),
+      });
 
       tl.fromTo(
         headerRef.current,
@@ -221,60 +170,88 @@ export default function Home() {
           0,
         );
 
-      // Parallax Animations (existing, but integrated into context)
-      // Background Video Parallax (slow down)
+      // Parallax Animations
+      const parallaxDefaults = {
+        ease: "none",
+        immediateRender: false,
+        scrollTrigger: {
+          trigger: heroRef.current,
+          start: "top top",
+          end: "bottom top",
+          scrub: 1,
+        },
+      };
+
+      // Background Video Parallax
       gsap.to(videoRef.current, {
         yPercent: 10,
-        ease: "none",
-        scrollTrigger: {
-          trigger: heroRef.current,
-          start: "top top",
-          end: "bottom top",
-          scrub: 1,
-        },
+        ...parallaxDefaults,
       });
 
-      // Title Parallax (fast up)
+      // Title Parallax
       gsap.to(titleRef.current, {
         y: -150,
-        ease: "none",
-        scrollTrigger: {
-          trigger: heroRef.current,
-          start: "top top",
-          end: "bottom top",
-          scrub: 1,
-        },
+        ...parallaxDefaults,
       });
 
-      // Left Column content parallax (medium up)
+      // Left Column content parallax
       gsap.to(leftColRef.current, {
         y: -80,
-        ease: "none",
-        scrollTrigger: {
-          trigger: heroRef.current,
-          start: "top top",
-          end: "bottom top",
-          scrub: 1,
-        },
+        ...parallaxDefaults,
       });
 
-      // Right Column content parallax (fastest up)
+      // Right Column content parallax
       gsap.to(rightColRef.current, {
         y: -180,
-        ease: "none",
-        scrollTrigger: {
-          trigger: heroRef.current,
-          start: "top top",
-          end: "bottom top",
-          scrub: 1,
-        },
+        ...parallaxDefaults,
       });
-    }, heroRef);
+
+      // 3. Collection Grid Reveal
+      const cards = gsap.utils.toArray<HTMLElement>(`.${styles.gridItem}`);
+      gsap.fromTo(
+        cards,
+        {
+          opacity: 0,
+          y: 120,
+          scale: 0.85,
+        },
+        {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          duration: 1.2,
+          stagger: 0.2,
+          ease: "expo.out",
+          scrollTrigger: {
+            trigger: collectionRef.current,
+            start: "top bottom-=100",
+            toggleActions: "play none none none",
+            fastScrollEnd: true,
+          },
+        },
+      );
+    });
+
+    const timer = setTimeout(() => {
+      ScrollTrigger.refresh();
+      console.log("ScrollTrigger Refreshed");
+    }, 2000);
 
     return () => {
+      clearTimeout(timer);
       ctx.revert();
       window.removeEventListener("scroll", handleScroll);
     };
+  }, [isLoading]);
+
+  // Global ScrollTrigger Refresh when components are ready
+  useLayoutEffect(() => {
+    if (!isLoading) {
+      const timer = setTimeout(() => {
+        ScrollTrigger.refresh();
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
   }, [isLoading]);
 
   const handleAddToCart = () => {
@@ -423,7 +400,11 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="collection" className={styles.collectionSection}>
+      <section
+        id="collection"
+        ref={collectionRef}
+        className={styles.collectionSection}
+      >
         <div className={styles.collectionHeader}>
           <h2 className={styles.collectionTitle}>NEW COLLECTION</h2>
           <div className={styles.collectionNavGroup}>
@@ -503,6 +484,8 @@ export default function Home() {
         basePath="/images/image-sequence/ezgif-frame-"
         extension="png"
       />
+
+      <Footer isLoading={isLoading} />
     </main>
   );
 }

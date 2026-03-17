@@ -13,6 +13,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 5;
 }
 
 .canvas {
@@ -140,6 +141,42 @@
   width: 100%;
   height: auto;
   filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.2));
+}
+
+.marqueeContainer {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  transform: translateY(-53.5%);
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  z-index: 1;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.marqueeRow {
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  display: flex;
+}
+
+.marqueeContent {
+  display: flex;
+  white-space: nowrap;
+  font-family: var(--font-druk-text-bold), sans-serif;
+  font-size: clamp(4rem, 15vw, 12rem);
+  line-height: 0.9;
+  color: rgba(174, 199, 217, 0.1);
+  text-transform: uppercase;
+  padding: 0.5rem 0;
+}
+
+.marqueeContent span {
+  display: inline-block;
 }
 
 .wipeContainer {

@@ -24,6 +24,7 @@ export const ImageSequence = ({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const textRef = useRef<HTMLDivElement>(null);
   const logoRef = useRef<HTMLDivElement>(null);
+  const marqueeRef = useRef<HTMLDivElement>(null);
 
   const [images, setImages] = useState<HTMLImageElement[]>([]);
   const [currentFrame, setCurrentFrame] = useState(1);
@@ -164,6 +165,41 @@ export const ImageSequence = ({
       "<", // Start at the same time as the shrink
     );
 
+    // Reveal Marquee during shrink
+    tl.fromTo(
+      marqueeRef.current,
+      { opacity: 0, scale: 0.8 },
+      {
+        opacity: 1,
+        scale: 1,
+        duration: 0.5,
+        ease: "power2.out",
+      },
+      "<",
+    );
+
+    // Infinite Marquee Movement
+    const marqueeRows = container.querySelectorAll(`.${styles.marqueeContent}`);
+    marqueeRows.forEach((row, i) => {
+      const direction = i % 2 === 0 ? -1 : 1;
+      if (direction === 1) {
+        gsap.set(row, { xPercent: -50 });
+        gsap.to(row, {
+          xPercent: 0,
+          ease: "none",
+          duration: 80,
+          repeat: -1,
+        });
+      } else {
+        gsap.to(row, {
+          xPercent: -50,
+          ease: "none",
+          duration: 80,
+          repeat: -1,
+        });
+      }
+    });
+
     return () => {
       tl.kill();
       ScrollTrigger.getAll().forEach((st) => {
@@ -219,8 +255,27 @@ export const ImageSequence = ({
     return () => window.removeEventListener("resize", render);
   }, [currentFrame, images, isLoaded]);
 
+  const marqueeText =
+    "KONIG URBAN SERIES STASIS MK.I ADVANCED GEAR ENGINEERED TO ENDURE · ";
+
   return (
     <section ref={containerRef} className={styles.container}>
+      {/* Marquee Behind Shrink */}
+      <div ref={marqueeRef} className={styles.marqueeContainer}>
+        <div className={styles.marqueeRow}>
+          <div className={styles.marqueeContent}>
+            <span>{marqueeText.repeat(4)}</span>
+            <span>{marqueeText.repeat(4)}</span>
+          </div>
+        </div>
+        <div className={styles.marqueeRow}>
+          <div className={styles.marqueeContent}>
+            <span>{marqueeText.repeat(4)}</span>
+            <span>{marqueeText.repeat(4)}</span>
+          </div>
+        </div>
+      </div>
+
       <div ref={stickyRef} className={styles.stickyWrapper}>
         <canvas ref={canvasRef} className={styles.canvas} />
         <div className={styles.overlay} />
