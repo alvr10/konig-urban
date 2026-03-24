@@ -1,0 +1,25 @@
+{
+  "name": "konig-urban-backend",
+  "version": "1.0.0",
+  "description": "Konig Urban — Microservices Backend",
+  "private": true,
+  "workspaces": [
+    "services/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "up": "docker compose up --build",
+    "up:d": "docker compose up --build -d",
+    "down": "docker compose down --remove-orphans",
+    "down:v": "docker compose down -v --remove-orphans",
+    "logs": "docker compose logs -f",
+    "ps": "docker compose ps",
+    "restart": "docker compose restart"
+  },
+  "dependencies": {
+    "@prisma/client": "^7.5.0"
+  },
+  "devDependencies": {
+    "prisma": "^7.5.0"
+  }
+}
