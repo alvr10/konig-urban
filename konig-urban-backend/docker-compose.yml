@@ -286,7 +286,7 @@ services:
       retries: 5
 
   createbuckets:
-    image: minio/mc:latest
+    image: alpine:3.19
     container_name: konig-createbuckets
     depends_on:
       minio:
@@ -295,10 +295,14 @@ services:
       - konig-network
     entrypoint: >
       /bin/sh -c "
-      mc alias set myminio http://minio:9000 mimir mimirpass;
-      mc mb --ignore-existing myminio/mimir;
+      apk add --no-cache curl aws-cli &&
+      aws --endpoint-url http://minio:9000 s3 mb s3://mimir --region us-east-1 2>/dev/null || true;
       exit 0;
       "
+    environment:
+      AWS_ACCESS_KEY_ID: mimir
+      AWS_SECRET_ACCESS_KEY: mimirpass
+      AWS_DEFAULT_REGION: us-east-1
 
 volumes:
   mimir_data:

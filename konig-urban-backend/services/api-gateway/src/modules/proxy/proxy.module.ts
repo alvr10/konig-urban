@@ -1,7 +1,6 @@
-import { Module, MiddlewareConsumer, NestModule, Injectable } from '@nestjs/common';
+import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
 import { ConsulService } from '@konig/shared';
 import { createProxyMiddleware } from 'http-proxy-middleware';
-import { Request, Response, NextFunction } from 'express';
 
 const ROUTE_TO_SERVICE: Record<string, string> = {
   '/catalog': 'catalog-service',
@@ -14,7 +13,6 @@ const ROUTE_TO_SERVICE: Record<string, string> = {
 };
 
 @Module({})
-@Injectable()
 export class ProxyModule implements NestModule {
   private readonly serviceIndices: Map<string, number> = new Map();
 
@@ -23,7 +21,7 @@ export class ProxyModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     for (const [prefix, serviceName] of Object.entries(ROUTE_TO_SERVICE)) {
       consumer.apply(
-        async (req: Request, res: Response, next: NextFunction) => {
+        async (req: any, res: any, next: any) => {
           // Resolve target from registry at request time
           const instances = await this.consulService.resolve(serviceName);
           if (!instances || !instances.length) {
@@ -43,12 +41,11 @@ export class ProxyModule implements NestModule {
             target,
             changeOrigin: true,
             on: {
-              error: (err, _req, res: Response | any) => {
-                // res type cast because of library interface mismatch
-                (res as Response).status(502).json({ error: 'Service unavailable', detail: err.message });
+              error: (err, _req, res: any) => {
+                res.status(502).json({ error: 'Service unavailable', detail: err.message });
               },
             },
-          })(req, res as any, next);
+          })(req, res, next);
         }
       ).forRoutes(prefix);
     }

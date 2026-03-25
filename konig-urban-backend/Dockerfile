@@ -1,65 +1,50 @@
-# --- STAGE 1: Build Stage ---
-FROM node:20-slim AS builder
+# --- STAGE 1: Build ---
+FROM node:20-alpine AS builder
 
-# Install system dependencies (openssl for Prisma, etc.)
-RUN apt-get update -y && \
-    apt-get install -y openssl python3 build-essential && \
-    rm -rf /var/lib/apt/lists/*
+# Alpine needs python3 + build tools for native modules, openssl for Prisma
+RUN apk add --no-cache openssl python3 make g++
 
 WORKDIR /app
 
-# Copy root configurations
-COPY package*.json ./
-COPY tsconfig.base.json ./
-
-# Copy everything (rest of the source)
-# .dockerignore should handle node_modules and dist
+# Copy source (node_modules/dist excluded via .dockerignore)
 COPY . .
 
-# Install ALL dependencies (needed for building)
+# Install all dependencies
 RUN npm install
 
-# Build the shared project
+# Build shared package first
 RUN npm run build -w @konig/shared
 
-# Build the specific service (passed as build arg)
+# Build the target service
 ARG SERVICE_NAME
-RUN if [ -f "./prisma/schema.prisma" ]; then npx prisma generate --schema=./prisma/schema.prisma; fi
 RUN npm run build -w @konig/${SERVICE_NAME}
 
-# --- STAGE 2: Production Stage ---
-FROM node:20-slim AS runner
+# Prune devDependencies in-place — no re-install needed in the runner
+RUN npm prune --omit=dev && npm cache clean --force
 
-RUN apt-get update -y && \
-    apt-get install -y openssl && \
-    rm -rf /var/lib/apt/lists/*
+# --- STAGE 2: Runner ---
+FROM node:20-alpine AS runner
+
+RUN apk add --no-cache openssl
 
 WORKDIR /app
 
-# Copy root configurations and dependency files
-COPY package*.json ./
-COPY tsconfig.base.json ./
-COPY packages/shared/package*.json ./packages/shared/
-
 ARG SERVICE_NAME
-COPY services/${SERVICE_NAME}/package*.json ./services/${SERVICE_NAME}/
 
-# Install only production dependencies
-RUN npm install --omit=dev --ignore-scripts && npm cache clean --force
+# Copy pruned production node_modules from builder (includes workspace symlinks)
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package.json ./package.json
 
-# Copy generated Prisma engine if it exists
-COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
-COPY --from=builder /app/node_modules/@prisma/client ./node_modules/@prisma/client
-
-# Copy built code
+# @konig/shared: symlink in node_modules points to /app/packages/shared,
+# so both package.json (for "main" resolution) and dist must exist there
+COPY --from=builder /app/packages/shared/package.json ./packages/shared/package.json
 COPY --from=builder /app/packages/shared/dist ./packages/shared/dist
+
 COPY --from=builder /app/services/${SERVICE_NAME}/dist ./services/${SERVICE_NAME}/dist
 
-# Metadata
 ENV SERVICE_NAME=${SERVICE_NAME}
 ENV NODE_ENV=production
 
-# The port is dynamic per service, but container internal port is fixed or passed
 ARG PORT=3000
 EXPOSE ${PORT}
 
