@@ -1,0 +1,192 @@
+openapi: 3.0.0
+info:
+  title: König Urban - HR Service
+  description: Microservicio encargado de la gestión de recursos humanos, departamentos, contratos y nóminas.
+  version: 1.0.0
+
+servers:
+  - url: /api/v1/hr
+    description: HR Service Base URL
+
+tags:
+  - name: Employees
+    description: Gestión central de la plantilla de trabajadores.
+  - name: Departments
+    description: Control de áreas operativas de la empresa.
+  - name: Payroll & Contracts
+    description: Gestión financiera del personal, nóminas y vigencia de contratos.
+
+paths:
+  /employees:
+    get:
+      tags: [Employees]
+      summary: Listar todos los empleados con filtros
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: deptId
+          in: query
+          schema: { type: string, format: uuid }
+        - name: active
+          in: query
+          schema: { type: boolean }
+      responses:
+        '200':
+          description: Listado de empleados obtenido.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Employee' }
+    post:
+      tags: [Employees]
+      summary: Registrar nuevo empleado (ERM/HR)
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/EmployeeInput' }
+      responses:
+        '201':
+          description: Empleado creado.
+
+  /employees/{employeeId}:
+    get:
+      tags: [Employees]
+      summary: Detalle completo de un empleado
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: employeeId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Ficha de empleado.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/EmployeeDetail' }
+
+  /departments:
+    get:
+      tags: [Departments]
+      summary: Listar departamentos y sus empleados
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200':
+          description: Listado de departamentos.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Department' }
+
+  /payroll:
+    get:
+      tags: [Payroll & Contracts]
+      summary: Listar nóminas por período (ERM/Finance)
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: periodo
+          in: query
+          description: "Formato YYYY-MM"
+          schema: { type: string }
+      responses:
+        '200':
+          description: Listado de nóminas.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Payroll' }
+    post:
+      tags: [Payroll & Contracts]
+      summary: Generar nóminas del mes actual
+      security: [{ bearerAuth: [] }]
+      responses:
+        '201':
+          description: Nóminas generadas correctamente.
+
+  /payroll/{payrollId}/pay:
+    post:
+      tags: [Payroll & Contracts]
+      summary: Marcar nómina como pagada
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: payrollId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Pago registrado.
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Employee:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        nombre: { type: string }
+        apellidos: { type: string }
+        email: { type: string, format: email }
+        cargo: { type: string }
+        departamentoId: { type: string, format: uuid }
+        fechaContratacion: { type: string, format: date }
+        activo: { type: boolean }
+
+    EmployeeDetail:
+      allOf:
+        - $ref: '#/components/schemas/Employee'
+        - type: object
+          properties:
+            salario: { type: number, format: decimal }
+            contratos:
+              type: array
+              items: { $ref: '#/components/schemas/Contract' }
+
+    EmployeeInput:
+      type: object
+      required: [nombre, apellidos, email, departamentoId, salario]
+      properties:
+        nombre: { type: string }
+        apellidos: { type: string }
+        email: { type: string }
+        departamentoId: { type: string, format: uuid }
+        salario: { type: number }
+        cargo: { type: string }
+
+    Department:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        nombre: { type: string }
+
+    Contract:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        empleadoId: { type: string, format: uuid }
+        tipoContrato: { type: string, enum: [indefinido, temporal, practicas] }
+        fechaInicio: { type: string, format: date }
+        fechaFin: { type: string, format: date, nullable: true }
+        salarioBruto: { type: number, format: decimal }
+        activo: { type: boolean }
+
+    Payroll:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        empleadoId: { type: string, format: uuid }
+        periodo: { type: string }
+        salarioBruto: { type: number, format: decimal }
+        deducciones: { type: number, format: decimal }
+        salarioNeto: { type: number, format: decimal }
+        fechaPago: { type: string, format: date, nullable: true }
+        pagada: { type: boolean }

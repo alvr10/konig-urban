@@ -1,0 +1,150 @@
+openapi: 3.0.0
+info:
+  title: König Urban - Finance Service
+  description: Microservicio encargado de la facturación, contabilidad, gestión de márgenes de beneficio y control de costes de producción.
+  version: 1.0.0
+
+servers:
+  - url: /api/v1/finance
+    description: Finance Service Base URL
+
+tags:
+  - name: Invoices
+    description: Gestión de facturas para los usuarios finales.
+  - name: Accounting (ERM)
+    description: Gestión de facturación a nivel macro y conciliación para administradores.
+  - name: Margins (ERM)
+    description: Análisis de rentabilidad de prendas y costes de producción.
+
+paths:
+  /invoices:
+    get:
+      tags: [Invoices]
+      summary: Listar facturas del usuario autenticado
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200':
+          description: Listado de facturas.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Invoice' }
+
+  /invoices/{invoiceId}:
+    get:
+      tags: [Invoices]
+      summary: Obtener detalle de una factura específica
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: invoiceId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Detalle de factura corregido.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/InvoiceDetail' }
+
+  /admin/invoices:
+    get:
+      tags: [Accounting (ERM)]
+      summary: Historial completo de facturación (ERM/Admin)
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: startDate
+          in: query
+          schema: { type: string, format: date }
+        - name: endDate
+          in: query
+          schema: { type: string, format: date }
+        - name: status
+          in: query
+          schema: { type: string, enum: [emitida, pagada, anulada] }
+      responses:
+        '200':
+          description: Listado administrativo de facturas.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Invoice' }
+
+  /admin/margins:
+    get:
+      tags: [Margins (ERM)]
+      summary: Analizar márgenes de beneficio por producto (ERM)
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: prendaId
+          in: query
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Análisis detallado de márgenes de beneficio.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/ProductMargin' }
+    post:
+      tags: [Margins (ERM)]
+      summary: Actualizar costes de producción y recalcular márgenes (ERM)
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ProductMarginInput' }
+      responses:
+        '201':
+          description: Margen recalculado.
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Invoice:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        pedidoId: { type: string, format: uuid }
+        clienteId: { type: string, format: uuid }
+        numeroFactura: { type: string }
+        fechaEmision: { type: string, format: date-time }
+        total: { type: number, format: decimal }
+        estado: { type: string, enum: [emitida, pagada, anulada] }
+        createdAt: { type: string, format: date-time }
+
+    InvoiceDetail:
+      allOf:
+        - $ref: '#/components/schemas/Invoice'
+        - type: object
+          properties:
+            orderSnapshot:
+              type: object
+              description: "Resumen puntual de lo facturado en aquel momento"
+
+    ProductMargin:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        prendaId: { type: string, format: uuid }
+        costeProduccion: { type: number, format: decimal }
+        precioVenta: { type: number, format: decimal }
+        margenPorcentaje: { type: number, format: decimal }
+        fechaCalculo: { type: string, format: date }
+
+    ProductMarginInput:
+      type: object
+      required: [prendaId, costeProduccion, precioVenta]
+      properties:
+        prendaId: { type: string, format: uuid }
+        costeProduccion: { type: number }
+        precioVenta: { type: number }
