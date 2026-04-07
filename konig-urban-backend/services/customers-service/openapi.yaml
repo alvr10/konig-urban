@@ -1,0 +1,163 @@
+openapi: 3.0.0
+info:
+  title: König Urban - Customers Service
+  description: Microservicio encargado de la gestión de perfiles de clientes, sistemas de fidelización (Membresías) y CRM.
+  version: 1.0.0
+
+servers:
+  - url: /api/v1/customers
+    description: Customers Service Base URL
+
+tags:
+  - name: Profile
+    description: Gestión del perfil del usuario autenticado.
+  - name: Memberships
+    description: Control de niveles de acceso y beneficios exclusivos.
+  - name: CRM (ERM)
+    description: Administración de la base de datos de clientes para gestores (ERM).
+
+paths:
+  /me:
+    get:
+      tags: [Profile]
+      summary: Obtener perfil del usuario actual
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200':
+          description: Perfil obtenido exitosamente.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Customer' }
+    patch:
+      tags: [Profile]
+      summary: Actualizar información de contacto/envío
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CustomerUpdateInput' }
+      responses:
+        '200':
+          description: Perfil actualizado.
+
+  /me/membership:
+    get:
+      tags: [Memberships]
+      summary: Consultar estado de membresía y acceso anticipado
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200':
+          description: Estado de membresía.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Membership' }
+
+  /crm/customers:
+    get:
+      tags: [CRM (ERM)]
+      summary: Listar clientes (ERM/Admin)
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: email
+          in: query
+          schema: { type: string }
+        - name: type
+          in: query
+          schema: { type: string, enum: [estandar, vip, staff] }
+        - name: active
+          in: query
+          schema: { type: boolean }
+      responses:
+        '200':
+          description: Listado de clientes.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Customer' }
+
+  /crm/customers/{customerId}:
+    get:
+      tags: [CRM (ERM)]
+      summary: Ver detalle exhaustivo de un cliente
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: customerId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Detalle del cliente.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CustomerDetail' }
+    patch:
+      tags: [CRM (ERM)]
+      summary: Modificar estado o tipo de cliente (ERM)
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: customerId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tipoCliente: { type: string, enum: [estandar, vip, staff] }
+                activo: { type: boolean }
+      responses:
+        '200':
+          description: Cliente modificado.
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Customer:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        nombre: { type: string }
+        apellidos: { type: string }
+        email: { type: string, format: email }
+        telefono: { type: string }
+        direccion: { type: string }
+        tipoCliente: { type: string }
+        fechaRegistro: { type: string, format: date-time }
+        activo: { type: boolean }
+
+    CustomerDetail:
+      allOf:
+        - $ref: '#/components/schemas/Customer'
+        - type: object
+          properties:
+            membresia: { $ref: '#/components/schemas/Membership' }
+            # Notas: Pedidos se consultarían al orders-service usualmente, 
+            # pero aquí se podría incluir un resumen.
+
+    CustomerUpdateInput:
+      type: object
+      properties:
+        nombre: { type: string }
+        apellidos: { type: string }
+        telefono: { type: string }
+        direccion: { type: string }
+
+    Membership:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        nivel: { type: string, enum: [bronce, plata, oro, platino] }
+        fechaInicio: { type: string, format: date }
+        accesoAnticipado: { type: boolean }
+        activa: { type: boolean }
+        createdAt: { type: string, format: date-time }
