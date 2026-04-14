@@ -42,6 +42,15 @@ COPY --from=builder /app/packages/shared/dist ./packages/shared/dist
 
 COPY --from=builder /app/services/${SERVICE_NAME}/dist ./services/${SERVICE_NAME}/dist
 
+# OpenAPI specs for all services — needed by api-gateway to serve /docs/yaml/* routes
+COPY --from=builder /app/services/catalog-service/openapi.yaml ./services/catalog-service/openapi.yaml
+COPY --from=builder /app/services/customers-service/openapi.yaml ./services/customers-service/openapi.yaml
+COPY --from=builder /app/services/finance-service/openapi.yaml ./services/finance-service/openapi.yaml
+COPY --from=builder /app/services/hr-service/openapi.yaml ./services/hr-service/openapi.yaml
+COPY --from=builder /app/services/marketing-service/openapi.yaml ./services/marketing-service/openapi.yaml
+COPY --from=builder /app/services/orders-service/openapi.yaml ./services/orders-service/openapi.yaml
+COPY --from=builder /app/services/production-service/openapi.yaml ./services/production-service/openapi.yaml
+
 ENV SERVICE_NAME=${SERVICE_NAME}
 ENV NODE_ENV=production
 
