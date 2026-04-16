@@ -4,6 +4,7 @@ import * as swaggerUi from 'swagger-ui-express';
 import { resolve } from 'path';
 import { AppModule } from './app.module';
 import { PinoLoggerService, HttpLoggerMiddleware } from '@konig/shared';
+import { jwtAuthMiddleware } from './middleware/jwt-auth.middleware';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { logger: ['log', 'warn', 'error'] });
@@ -15,6 +16,9 @@ async function bootstrap() {
   const pinoLogger = app.get(PinoLoggerService);
   const loggerMiddleware = new HttpLoggerMiddleware(pinoLogger);
   expressInstance.use((req: any, res: any, next: any) => loggerMiddleware.use(req, res, next));
+
+  // Attach JWT Auth Middleware
+  expressInstance.use(jwtAuthMiddleware);
 
   const services = [
     'catalog-service',
