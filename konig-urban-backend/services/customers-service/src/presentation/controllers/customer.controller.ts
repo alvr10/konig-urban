@@ -9,27 +9,28 @@ import {
   Query,
 } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
-import { PrismaService } from '../infrastructure/prisma.service';
+import { PrismaService } from '../../infrastructure/database/prisma.service';
+
 import {
   UpdateCustomerByCrmCommand,
   UpdateMeCommand,
-} from '../application/commands/customer.commands';
+} from '../../application/commands/customer.commands';
 import {
   CustomerFilterDto,
   UpdateCustomerByCrmDto,
   UpdateMeDto,
-} from '../application/dtos/customer.dto';
+} from '../../application/dtos/customer.dto';
 
 @Controller()
 export class CustomersController {
   constructor(
     private readonly commandBus: CommandBus,
     private readonly prisma: PrismaService,
-  ) {}
+  ) { }
 
   @Get('me')
   async getMe(@Headers('x-customer-id') customerId: string) {
-    const customer = await this.prisma.customer.findUnique({
+    const customer = await this.prisma.cliente.findUnique({
       where: { id: customerId },
     });
 
@@ -50,13 +51,13 @@ export class CustomersController {
 
   @Get('me/membership')
   async getMyMembership(@Headers('x-customer-id') customerId: string) {
-    const membership = await this.prisma.membership.findFirst({
+    const membership = await this.prisma.membresia.findFirst({
       where: {
-        customerId,
+        clienteId: customerId,
         activa: true,
       },
       orderBy: {
-        createdAt: 'desc',
+        fechaInicio: 'desc',
       },
     });
 
@@ -69,7 +70,7 @@ export class CustomersController {
 
   @Get('crm/customers')
   async getCrmCustomers(@Query() filters: CustomerFilterDto) {
-    return this.prisma.customer.findMany({
+    return this.prisma.cliente.findMany({
       where: {
         email: filters.email
           ? { contains: filters.email, mode: 'insensitive' }
@@ -86,14 +87,10 @@ export class CustomersController {
 
   @Get('crm/customers/:customerId')
   async getCustomerDetail(@Param('customerId') customerId: string) {
-    const customer = await this.prisma.customer.findUnique({
+    const customer = await this.prisma.cliente.findUnique({
       where: { id: customerId },
       include: {
-        memberships: {
-          where: { activa: true },
-          orderBy: { createdAt: 'desc' },
-          take: 1,
-        },
+        membresia: true,
       },
     });
 
@@ -101,12 +98,7 @@ export class CustomersController {
       throw new NotFoundException('Cliente no encontrado');
     }
 
-    const { memberships, ...customerData } = customer;
-
-    return {
-      ...customerData,
-      membresia: memberships[0] ?? null,
-    };
+    return customer;
   }
 
   @Patch('crm/customers/:customerId')

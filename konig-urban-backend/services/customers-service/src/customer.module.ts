@@ -1,8 +1,7 @@
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
-import { PrismaService } from './infrastructure/prisma.service';
-import { CustomersController } from './presentation/customers.controller';
-import { HealthController } from './presentation/health.controller';
+import { PrismaService } from './infrastructure/database/prisma.service';
+import { CustomersController } from './presentation/controllers/customer.controller';
 import {
   UpdateCustomerByCrmHandler,
   UpdateMeHandler,
@@ -12,7 +11,7 @@ const CommandHandlers = [UpdateMeHandler, UpdateCustomerByCrmHandler];
 
 @Module({
   imports: [CqrsModule],
-  controllers: [CustomersController, HealthController],
+  controllers: [CustomersController],
   providers: [PrismaService, ...CommandHandlers],
   exports: [PrismaService],
 })

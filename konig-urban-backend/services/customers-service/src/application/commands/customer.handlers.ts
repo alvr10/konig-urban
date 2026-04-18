@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { PrismaService } from '../../infrastructure/prisma.service';
+import { PrismaService } from '../../infrastructure/database/prisma.service';
+
 import {
   UpdateCustomerByCrmCommand,
   UpdateMeCommand,
@@ -9,12 +10,12 @@ import {
 @CommandHandler(UpdateMeCommand)
 @Injectable()
 export class UpdateMeHandler implements ICommandHandler<UpdateMeCommand> {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   async execute(command: UpdateMeCommand) {
     const { customerId, payload } = command;
 
-    const customer = await this.prisma.customer.findUnique({
+    const customer = await this.prisma.cliente.findUnique({
       where: { id: customerId },
     });
 
@@ -22,7 +23,7 @@ export class UpdateMeHandler implements ICommandHandler<UpdateMeCommand> {
       throw new NotFoundException('Cliente no encontrado');
     }
 
-    return this.prisma.customer.update({
+    return this.prisma.cliente.update({
       where: { id: customerId },
       data: {
         nombre: payload.nombre,
@@ -37,14 +38,13 @@ export class UpdateMeHandler implements ICommandHandler<UpdateMeCommand> {
 @CommandHandler(UpdateCustomerByCrmCommand)
 @Injectable()
 export class UpdateCustomerByCrmHandler
-  implements ICommandHandler<UpdateCustomerByCrmCommand>
-{
-  constructor(private readonly prisma: PrismaService) {}
+  implements ICommandHandler<UpdateCustomerByCrmCommand> {
+  constructor(private readonly prisma: PrismaService) { }
 
   async execute(command: UpdateCustomerByCrmCommand) {
     const { customerId, payload } = command;
 
-    const customer = await this.prisma.customer.findUnique({
+    const customer = await this.prisma.cliente.findUnique({
       where: { id: customerId },
     });
 
@@ -52,7 +52,7 @@ export class UpdateCustomerByCrmHandler
       throw new NotFoundException('Cliente no encontrado');
     }
 
-    return this.prisma.customer.update({
+    return this.prisma.cliente.update({
       where: { id: customerId },
       data: {
         tipoCliente: payload.tipoCliente,
