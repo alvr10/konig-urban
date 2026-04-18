@@ -1,6 +1,7 @@
 import { Controller, Get, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { DiscoveryClientModule, MetricsModule } from '@konig/shared';
+import { MarketingModule } from './marketing.module';
 
 // TODO: Add content logic here
 // Suggested modules:
@@ -18,8 +19,10 @@ class HealthController {
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     DiscoveryClientModule,
-    MetricsModule
+    MetricsModule,
+    MarketingModule
   ],
   controllers: [HealthController],
 })
 export class AppModule { }
+

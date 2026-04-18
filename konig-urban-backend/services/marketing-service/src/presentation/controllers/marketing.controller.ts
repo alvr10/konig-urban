@@ -8,31 +8,35 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
-import { CommandBus } from '@nestjs/cqrs';
+import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import {
   AddCampaignTargetDto,
   CampaignFilterDto,
   CreateCampaignDto,
   UpdateCampaignDto,
-} from '../application/dtos/campaign.dto';
+} from '../../application/dtos/campaign.dto';
 import {
   AddCampaignTargetCommand,
   CreateCampaignCommand,
   SendCampaignCommand,
   UpdateCampaignCommand,
-} from '../application/commands/campaign.commands';
-import { MarketingRepository } from '../infrastructure/marketing.repository';
+} from '../../application/commands/campaign.commands';
+import {
+  GetCampaignsQuery,
+  GetCampaignTargetsQuery,
+} from '../../application/queries/campaign.queries';
+
 
 @Controller('campaigns')
 export class MarketingController {
   constructor(
     private readonly commandBus: CommandBus,
-    private readonly repository: MarketingRepository,
+    private readonly queryBus: QueryBus,
   ) {}
 
   @Get()
   async getCampaigns(@Query() filters: CampaignFilterDto) {
-    return this.repository.getCampaigns(filters);
+    return this.queryBus.execute(new GetCampaignsQuery(filters));
   }
 
   @Post()
@@ -50,7 +54,7 @@ export class MarketingController {
 
   @Get(':campaignId/segments')
   async getCampaignTargets(@Param('campaignId') campaignId: string) {
-    return this.repository.getCampaignTargets(campaignId);
+    return this.queryBus.execute(new GetCampaignTargetsQuery(campaignId));
   }
 
   @Post(':campaignId/segments')

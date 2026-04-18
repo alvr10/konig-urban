@@ -1,15 +1,18 @@
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
-import { MarketingController } from './presentation/marketing.controller';
-import { HealthController } from './presentation/health.controller';
-import { PrismaService } from './infrastructure/prisma.service';
-import { MarketingRepository } from './infrastructure/marketing.repository';
+import { MarketingController } from './presentation/controllers/marketing.controller';
+
+import { PrismaService } from './infrastructure/database/prisma.service';
 import {
   AddCampaignTargetHandler,
   CreateCampaignHandler,
   SendCampaignHandler,
   UpdateCampaignHandler,
 } from './application/commands/campaign.handlers';
+import {
+  GetCampaignsHandler,
+  GetCampaignTargetsHandler,
+} from './application/queries/campaign.handlers';
 
 const CommandHandlers = [
   CreateCampaignHandler,
@@ -18,10 +21,15 @@ const CommandHandlers = [
   SendCampaignHandler,
 ];
 
+const QueryHandlers = [GetCampaignsHandler, GetCampaignTargetsHandler];
+
 @Module({
   imports: [CqrsModule],
-  controllers: [MarketingController, HealthController],
-  providers: [PrismaService, MarketingRepository, ...CommandHandlers],
-  exports: [MarketingRepository],
+  controllers: [MarketingController],
+  providers: [
+    PrismaService,
+    ...CommandHandlers,
+    ...QueryHandlers,
+  ],
 })
-export class MarketingModule {}
+export class MarketingModule { }
