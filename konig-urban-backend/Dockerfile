@@ -12,6 +12,9 @@ COPY . .
 # Install all dependencies
 RUN npm install
 
+# Generate Prisma Client from the shared schema
+RUN npx prisma generate --schema=prisma/schema.prisma
+
 # Build shared package first
 RUN npm run build -w @konig/shared
 

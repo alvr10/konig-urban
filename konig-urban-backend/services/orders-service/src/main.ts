@@ -11,7 +11,10 @@ async function bootstrap() {
     transform: true,
   }));
   
-  app.setGlobalPrefix('api/v1/orders');
+  app.setGlobalPrefix('api/v1/orders', {
+    exclude: ['health', 'metrics'],
+  });
+
   app.enableCors();
   
   const port = process.env.PORT ?? 3004;

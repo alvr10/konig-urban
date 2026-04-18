@@ -11,7 +11,10 @@ async function bootstrap() {
     transform: true,
   }));
 
-  app.setGlobalPrefix('api/v1/catalog');
+  app.setGlobalPrefix('api/v1/catalog', {
+    exclude: ['health', 'metrics'],
+  });
+
 
   const port = process.env.PORT || 3004;
   await app.listen(port);

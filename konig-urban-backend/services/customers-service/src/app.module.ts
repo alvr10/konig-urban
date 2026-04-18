@@ -1,10 +1,7 @@
 import { Controller, Get, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { DiscoveryClientModule, MetricsModule } from '@konig/shared';
-
-// TODO: Add content logic here
-// Suggested modules:
-//   - ContentPiecesModule (Kanban/Calendar CRUD, status transitions via Mongoose)
+import { CustomersModule } from './customer.module';
 
 @Controller('health')
 class HealthController {
@@ -18,8 +15,10 @@ class HealthController {
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     DiscoveryClientModule,
-    MetricsModule
+    MetricsModule,
+    CustomersModule
   ],
   controllers: [HealthController],
 })
 export class AppModule { }
+
