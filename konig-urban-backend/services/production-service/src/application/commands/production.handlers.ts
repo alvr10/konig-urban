@@ -5,7 +5,8 @@ import {
 } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Prisma } from '@prisma/client';
-import { PrismaService } from '../../infrastructure/prisma.service';
+import { PrismaService } from '../../infrastructure/database/prisma.service';
+
 import {
   CreatePurchaseOrderCommand,
   CreateQualityCheckCommand,
@@ -21,9 +22,8 @@ import {
 @CommandHandler(CreateSupplierCommand)
 @Injectable()
 export class CreateSupplierHandler
-  implements ICommandHandler<CreateSupplierCommand>
-{
-  constructor(private readonly prisma: PrismaService) {}
+  implements ICommandHandler<CreateSupplierCommand> {
+  constructor(private readonly prisma: PrismaService) { }
 
   async execute(command: CreateSupplierCommand) {
     const { nombre, tipo, contacto, email, pais } = command.payload;
@@ -44,9 +44,8 @@ export class CreateSupplierHandler
 @CommandHandler(CreatePurchaseOrderCommand)
 @Injectable()
 export class CreatePurchaseOrderHandler
-  implements ICommandHandler<CreatePurchaseOrderCommand>
-{
-  constructor(private readonly prisma: PrismaService) {}
+  implements ICommandHandler<CreatePurchaseOrderCommand> {
+  constructor(private readonly prisma: PrismaService) { }
 
   async execute(command: CreatePurchaseOrderCommand) {
     const { proveedorId, fecha, notas, lineas } = command.payload;
@@ -94,9 +93,8 @@ export class CreatePurchaseOrderHandler
 @CommandHandler(UpdatePurchaseOrderCommand)
 @Injectable()
 export class UpdatePurchaseOrderHandler
-  implements ICommandHandler<UpdatePurchaseOrderCommand>
-{
-  constructor(private readonly prisma: PrismaService) {}
+  implements ICommandHandler<UpdatePurchaseOrderCommand> {
+  constructor(private readonly prisma: PrismaService) { }
 
   async execute(command: UpdatePurchaseOrderCommand) {
     const { orderId, payload } = command;
@@ -122,9 +120,8 @@ export class UpdatePurchaseOrderHandler
 @CommandHandler(CreateQualityCheckCommand)
 @Injectable()
 export class CreateQualityCheckHandler
-  implements ICommandHandler<CreateQualityCheckCommand>
-{
-  constructor(private readonly prisma: PrismaService) {}
+  implements ICommandHandler<CreateQualityCheckCommand> {
+  constructor(private readonly prisma: PrismaService) { }
 
   async execute(command: CreateQualityCheckCommand) {
     const { prendaId, inspector, resultado, notas } = command.payload;

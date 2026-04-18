@@ -8,27 +8,28 @@ import {
   Query,
 } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
-import { PrismaService } from '../infrastructure/prisma.service';
+import { PrismaService } from '../../infrastructure/database/prisma.service';
+
 import {
   CreatePurchaseOrderCommand,
   CreateQualityCheckCommand,
   CreateSupplierCommand,
   UpdatePurchaseOrderCommand,
-} from '../application/commands/production.commands';
+} from '../../application/commands/production.commands';
 import {
   CreatePurchaseOrderDto,
   CreateQualityCheckDto,
   CreateSupplierDto,
   PurchaseOrderFilterDto,
   SupplierFilterDto,
-} from '../application/dtos/production.dto';
+} from '../../application/dtos/production.dto';
 
 @Controller()
 export class ProductionController {
   constructor(
     private readonly commandBus: CommandBus,
     private readonly prisma: PrismaService,
-  ) {}
+  ) { }
 
   @Get('suppliers')
   async getSuppliers(@Query() filters: SupplierFilterDto) {

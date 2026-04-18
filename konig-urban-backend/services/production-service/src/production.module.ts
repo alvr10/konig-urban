@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
-import { PrismaService } from './infrastructure/prisma.service';
-import { ProductionController } from './presentation/production.controller';
-import { HealthController } from './presentation/health.controller';
+import { PrismaService } from './infrastructure/database/prisma.service';
+import { ProductionController } from './presentation/controllers/production.controller';
+
 import {
   CreatePurchaseOrderHandler,
   CreateQualityCheckHandler,
@@ -19,8 +19,8 @@ const CommandHandlers = [
 
 @Module({
   imports: [CqrsModule],
-  controllers: [ProductionController, HealthController],
+  controllers: [ProductionController],
   providers: [PrismaService, ...CommandHandlers],
   exports: [PrismaService],
 })
-export class ProductionModule {}
+export class ProductionModule { }
