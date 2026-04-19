@@ -1,0 +1,171 @@
+openapi: 3.0.0
+info:
+  title: König Urban - Marketing Service
+  description: Microservicio encargado de la gestión de campañas publicitarias, fidelización y segmentación de clientes para lanzamientos exclusivos.
+  version: 1.0.0
+
+servers:
+  - url: /api/v1/marketing
+    description: Marketing Service Base URL
+
+tags:
+  - name: Campaigns
+    description: Control operativo de campañas (newsletter, influencer, drops).
+  - name: Segmentation
+    description: Agrupación y segmentación de clientes para envío de comunicaciones.
+
+paths:
+  /campaigns:
+    get:
+      tags: [Campaigns]
+      summary: Listar todas las campañas
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: status
+          in: query
+          schema:
+            { type: string, enum: [planificada, activa, finalizada, cancelada] }
+        - name: type
+          in: query
+          schema: { type: string, enum: [newsletter, influencer, redes, drop] }
+      responses:
+        "200":
+          description: Listado de campañas.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Campaign" }
+    post:
+      tags: [Campaigns]
+      summary: Crear una nueva campaña (ERP/Marketing)
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CampaignInput" }
+      responses:
+        "201":
+          description: Campaña creada.
+
+  /campaigns/{campaignId}:
+    put:
+      tags: [Campaigns]
+      summary: Actualizar estado o meta-datos de campaña
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: campaignId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CampaignUpdate" }
+      responses:
+        "200":
+          description: Campaña actualizada.
+
+  /campaigns/{campaignId}/segments:
+    get:
+      tags: [Segmentation]
+      summary: Obtener clientes segmentados para esta campaña
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: campaignId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "200":
+          description: Listado de clientes segmentados con estado de envío.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/CampaignTarget" }
+    post:
+      tags: [Segmentation]
+      summary: Añadir segmento de clientes a campaña (ERP)
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: campaignId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [clienteId]
+              properties:
+                clienteId: { type: string, format: uuid }
+      responses:
+        "200":
+          description: Cliente segmentado para la campaña.
+
+  /campaigns/{campaignId}/send:
+    post:
+      tags: [Campaigns]
+      summary: Ejecutar envío de comunicaciones segun segmentación
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: campaignId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "202":
+          description: Proceso de envío iniciado de forma asíncrona.
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Campaign:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        nombre: { type: string }
+        tipo: { type: string, enum: [newsletter, influencer, redes, drop] }
+        coleccionId: { type: string, format: uuid, nullable: true }
+        fechaInicio: { type: string, format: date }
+        fechaFin: { type: string, format: date, nullable: true }
+        estado:
+          { type: string, enum: [planificada, activa, finalizada, cancelada] }
+        descripcion: { type: string }
+        createdAt: { type: string, format: date-time }
+
+    CampaignInput:
+      type: object
+      required: [nombre, tipo, fechaInicio]
+      properties:
+        nombre: { type: string }
+        tipo: { type: string }
+        coleccionId: { type: string, format: uuid }
+        fechaInicio: { type: string, format: date }
+        fechaFin: { type: string, format: date }
+        descripcion: { type: string }
+
+    CampaignUpdate:
+      type: object
+      properties:
+        estado: { type: string }
+        nombre: { type: string }
+        descripcion: { type: string }
+
+    CampaignTarget:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        campanaId: { type: string, format: uuid }
+        clienteId: { type: string, format: uuid }
+        enviado: { type: boolean }
+        fechaEnvio: { type: string, format: date-time, nullable: true }
