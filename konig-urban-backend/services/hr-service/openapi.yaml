@@ -30,24 +30,24 @@ paths:
           in: query
           schema: { type: boolean }
       responses:
-        '200':
+        "200":
           description: Listado de empleados obtenido.
           content:
             application/json:
               schema:
                 type: array
-                items: { $ref: '#/components/schemas/Employee' }
+                items: { $ref: "#/components/schemas/Employee" }
     post:
       tags: [Employees]
-      summary: Registrar nuevo empleado (ERM/HR)
+      summary: Registrar nuevo empleado (ERP/HR)
       security: [{ bearerAuth: [] }]
       requestBody:
         required: true
         content:
           application/json:
-            schema: { $ref: '#/components/schemas/EmployeeInput' }
+            schema: { $ref: "#/components/schemas/EmployeeInput" }
       responses:
-        '201':
+        "201":
           description: Empleado creado.
 
   /employees/{employeeId}:
@@ -61,11 +61,11 @@ paths:
           required: true
           schema: { type: string, format: uuid }
       responses:
-        '200':
+        "200":
           description: Ficha de empleado.
           content:
             application/json:
-              schema: { $ref: '#/components/schemas/EmployeeDetail' }
+              schema: { $ref: "#/components/schemas/EmployeeDetail" }
 
   /departments:
     get:
@@ -73,18 +73,18 @@ paths:
       summary: Listar departamentos y sus empleados
       security: [{ bearerAuth: [] }]
       responses:
-        '200':
+        "200":
           description: Listado de departamentos.
           content:
             application/json:
               schema:
                 type: array
-                items: { $ref: '#/components/schemas/Department' }
+                items: { $ref: "#/components/schemas/Department" }
 
   /payroll:
     get:
       tags: [Payroll & Contracts]
-      summary: Listar nóminas por período (ERM/Finance)
+      summary: Listar nóminas por período (ERP/Finance)
       security: [{ bearerAuth: [] }]
       parameters:
         - name: periodo
@@ -92,19 +92,19 @@ paths:
           description: "Formato YYYY-MM"
           schema: { type: string }
       responses:
-        '200':
+        "200":
           description: Listado de nóminas.
           content:
             application/json:
               schema:
                 type: array
-                items: { $ref: '#/components/schemas/Payroll' }
+                items: { $ref: "#/components/schemas/Payroll" }
     post:
       tags: [Payroll & Contracts]
       summary: Generar nóminas del mes actual
       security: [{ bearerAuth: [] }]
       responses:
-        '201':
+        "201":
           description: Nóminas generadas correctamente.
 
   /payroll/{payrollId}/pay:
@@ -118,7 +118,7 @@ paths:
           required: true
           schema: { type: string, format: uuid }
       responses:
-        '200':
+        "200":
           description: Pago registrado.
 
 components:
@@ -143,13 +143,13 @@ components:
 
     EmployeeDetail:
       allOf:
-        - $ref: '#/components/schemas/Employee'
+        - $ref: "#/components/schemas/Employee"
         - type: object
           properties:
             salario: { type: number, format: decimal }
             contratos:
               type: array
-              items: { $ref: '#/components/schemas/Contract' }
+              items: { $ref: "#/components/schemas/Contract" }
 
     EmployeeInput:
       type: object

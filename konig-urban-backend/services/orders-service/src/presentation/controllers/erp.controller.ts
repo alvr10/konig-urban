@@ -4,12 +4,12 @@ import { AdminOrderFilterDto, UpdateOrderStatusDto } from '../../application/dto
 import { GetAdminOrdersQuery } from '../../application/queries/orders.queries';
 import { UpdateOrderStatusCommand } from '../../application/commands/orders.commands';
 
-@Controller('erm/orders')
-export class ErmOrderController {
+@Controller('erp/orders')
+export class ErpOrderController {
   constructor(
     private readonly commandBus: CommandBus,
     private readonly queryBus: QueryBus,
-  ) {}
+  ) { }
 
   @Get()
   async getAdminOrders(@Query() filters: AdminOrderFilterDto) {

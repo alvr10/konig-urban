@@ -11,9 +11,9 @@ servers:
 tags:
   - name: Invoices
     description: Gestión de facturas para los usuarios finales.
-  - name: Accounting (ERM)
+  - name: Accounting (ERP)
     description: Gestión de facturación a nivel macro y conciliación para administradores.
-  - name: Margins (ERM)
+  - name: Margins (ERP)
     description: Análisis de rentabilidad de prendas y costes de producción.
 
 paths:
@@ -23,13 +23,13 @@ paths:
       summary: Listar facturas del usuario autenticado
       security: [{ bearerAuth: [] }]
       responses:
-        '200':
+        "200":
           description: Listado de facturas.
           content:
             application/json:
               schema:
                 type: array
-                items: { $ref: '#/components/schemas/Invoice' }
+                items: { $ref: "#/components/schemas/Invoice" }
 
   /invoices/{invoiceId}:
     get:
@@ -42,16 +42,16 @@ paths:
           required: true
           schema: { type: string, format: uuid }
       responses:
-        '200':
+        "200":
           description: Detalle de factura corregido.
           content:
             application/json:
-              schema: { $ref: '#/components/schemas/InvoiceDetail' }
+              schema: { $ref: "#/components/schemas/InvoiceDetail" }
 
   /admin/invoices:
     get:
-      tags: [Accounting (ERM)]
-      summary: Historial completo de facturación (ERM/Admin)
+      tags: [Accounting (ERP)]
+      summary: Historial completo de facturación (ERP/Admin)
       security: [{ bearerAuth: [] }]
       parameters:
         - name: startDate
@@ -64,42 +64,42 @@ paths:
           in: query
           schema: { type: string, enum: [emitida, pagada, anulada] }
       responses:
-        '200':
+        "200":
           description: Listado administrativo de facturas.
           content:
             application/json:
               schema:
                 type: array
-                items: { $ref: '#/components/schemas/Invoice' }
+                items: { $ref: "#/components/schemas/Invoice" }
 
   /admin/margins:
     get:
-      tags: [Margins (ERM)]
-      summary: Analizar márgenes de beneficio por producto (ERM)
+      tags: [Margins (ERP)]
+      summary: Analizar márgenes de beneficio por producto (ERP)
       security: [{ bearerAuth: [] }]
       parameters:
         - name: prendaId
           in: query
           schema: { type: string, format: uuid }
       responses:
-        '200':
+        "200":
           description: Análisis detallado de márgenes de beneficio.
           content:
             application/json:
               schema:
                 type: array
-                items: { $ref: '#/components/schemas/ProductMargin' }
+                items: { $ref: "#/components/schemas/ProductMargin" }
     post:
-      tags: [Margins (ERM)]
-      summary: Actualizar costes de producción y recalcular márgenes (ERM)
+      tags: [Margins (ERP)]
+      summary: Actualizar costes de producción y recalcular márgenes (ERP)
       security: [{ bearerAuth: [] }]
       requestBody:
         required: true
         content:
           application/json:
-            schema: { $ref: '#/components/schemas/ProductMarginInput' }
+            schema: { $ref: "#/components/schemas/ProductMarginInput" }
       responses:
-        '201':
+        "201":
           description: Margen recalculado.
 
 components:
@@ -124,7 +124,7 @@ components:
 
     InvoiceDetail:
       allOf:
-        - $ref: '#/components/schemas/Invoice'
+        - $ref: "#/components/schemas/Invoice"
         - type: object
           properties:
             orderSnapshot:

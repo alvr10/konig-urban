@@ -13,7 +13,7 @@ tags:
     description: Gestión de pedidos para el cliente final.
   - name: Shipments
     description: Seguimiento y estado de envíos.
-  - name: Logistics (ERM)
+  - name: Logistics (ERP)
     description: Gestión de almacén, picking y despacho para administradores.
 
 paths:
@@ -26,9 +26,9 @@ paths:
         required: true
         content:
           application/json:
-            schema: { $ref: '#/components/schemas/OrderCreateInput' }
+            schema: { $ref: "#/components/schemas/OrderCreateInput" }
       responses:
-        '201':
+        "201":
           description: Pedido creado, se retorna la sesión de pago.
           content:
             application/json:
@@ -42,13 +42,13 @@ paths:
       summary: Listar mis pedidos
       security: [{ bearerAuth: [] }]
       responses:
-        '200':
+        "200":
           description: Historial de pedidos del cliente actual.
           content:
             application/json:
               schema:
                 type: array
-                items: { $ref: '#/components/schemas/Order' }
+                items: { $ref: "#/components/schemas/Order" }
 
   /{orderId}:
     get:
@@ -61,11 +61,11 @@ paths:
           required: true
           schema: { type: string, format: uuid }
       responses:
-        '200':
+        "200":
           description: Detalle del pedido.
           content:
             application/json:
-              schema: { $ref: '#/components/schemas/OrderDetail' }
+              schema: { $ref: "#/components/schemas/OrderDetail" }
 
   /shipments/{orderId}:
     get:
@@ -77,34 +77,39 @@ paths:
           required: true
           schema: { type: string, format: uuid }
       responses:
-        '200':
+        "200":
           description: Información de logística.
           content:
             application/json:
-              schema: { $ref: '#/components/schemas/Shipment' }
+              schema: { $ref: "#/components/schemas/Shipment" }
 
-  /erm/orders:
+  /erp/orders:
     get:
-      tags: [Logistics (ERM)]
-      summary: Listar todos los pedidos para gestión (ERM)
+      tags: [Logistics (ERP)]
+      summary: Listar todos los pedidos para gestión (ERP)
       security: [{ bearerAuth: [] }]
       parameters:
         - name: status
           in: query
-          schema: { type: string, enum: [pendiente, pagado, procesando, enviado, entregado, cancelado] }
+          schema:
+            {
+              type: string,
+              enum:
+                [pendiente, pagado, procesando, enviado, entregado, cancelado],
+            }
       responses:
-        '200':
+        "200":
           description: Listado global de pedidos.
           content:
             application/json:
               schema:
                 type: array
-                items: { $ref: '#/components/schemas/Order' }
+                items: { $ref: "#/components/schemas/Order" }
 
-  /erm/orders/{orderId}/status:
+  /erp/orders/{orderId}/status:
     patch:
-      tags: [Logistics (ERM)]
-      summary: Actualizar estado de pedido o envío (ERM)
+      tags: [Logistics (ERP)]
+      summary: Actualizar estado de pedido o envío (ERP)
       security: [{ bearerAuth: [] }]
       parameters:
         - name: orderId
@@ -121,7 +126,7 @@ paths:
                 trackingUrl: { type: string }
                 operadorLogistico: { type: string }
       responses:
-        '200':
+        "200":
           description: Estado actualizado correctamente.
 
 components:
@@ -138,20 +143,25 @@ components:
         id: { type: string, format: uuid }
         clienteId: { type: string, format: uuid }
         fecha: { type: string, format: date-time }
-        estado: { type: string, enum: [pendiente, pagado, procesando, enviado, entregado, cancelado] }
+        estado:
+          {
+            type: string,
+            enum:
+              [pendiente, pagado, procesando, enviado, entregado, cancelado],
+          }
         total: { type: number, format: decimal }
         metodoPago: { type: string }
         createdAt: { type: string, format: date-time }
 
     OrderDetail:
       allOf:
-        - $ref: '#/components/schemas/Order'
+        - $ref: "#/components/schemas/Order"
         - type: object
           properties:
             lineas:
               type: array
-              items: { $ref: '#/components/schemas/OrderItem' }
-            envio: { $ref: '#/components/schemas/Shipment' }
+              items: { $ref: "#/components/schemas/OrderItem" }
+            envio: { $ref: "#/components/schemas/Shipment" }
 
     OrderItem:
       type: object
@@ -183,7 +193,8 @@ components:
         pedidoId: { type: string, format: uuid }
         operadorLogistico: { type: string }
         trackingUrl: { type: string }
-        estadoEnvio: { type: string, enum: [pendiente, en_transito, entregado, devuelto] }
+        estadoEnvio:
+          { type: string, enum: [pendiente, en_transito, entregado, devuelto] }
         fechaEnvio: { type: string, format: date-time, nullable: true }
         fechaEntregaEstimada: { type: string, format: date, nullable: true }
         packagingPremium: { type: boolean }

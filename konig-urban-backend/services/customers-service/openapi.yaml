@@ -13,8 +13,8 @@ tags:
     description: Gestión del perfil del usuario autenticado.
   - name: Memberships
     description: Control de niveles de acceso y beneficios exclusivos.
-  - name: CRM (ERM)
-    description: Administración de la base de datos de clientes para gestores (ERM).
+  - name: CRM (ERP)
+    description: Administración de la base de datos de clientes para gestores (ERP).
 
 paths:
   /me:
@@ -23,11 +23,11 @@ paths:
       summary: Obtener perfil del usuario actual
       security: [{ bearerAuth: [] }]
       responses:
-        '200':
+        "200":
           description: Perfil obtenido exitosamente.
           content:
             application/json:
-              schema: { $ref: '#/components/schemas/Customer' }
+              schema: { $ref: "#/components/schemas/Customer" }
     patch:
       tags: [Profile]
       summary: Actualizar información de contacto/envío
@@ -36,9 +36,9 @@ paths:
         required: true
         content:
           application/json:
-            schema: { $ref: '#/components/schemas/CustomerUpdateInput' }
+            schema: { $ref: "#/components/schemas/CustomerUpdateInput" }
       responses:
-        '200':
+        "200":
           description: Perfil actualizado.
 
   /me/membership:
@@ -47,16 +47,16 @@ paths:
       summary: Consultar estado de membresía y acceso anticipado
       security: [{ bearerAuth: [] }]
       responses:
-        '200':
+        "200":
           description: Estado de membresía.
           content:
             application/json:
-              schema: { $ref: '#/components/schemas/Membership' }
+              schema: { $ref: "#/components/schemas/Membership" }
 
   /crm/customers:
     get:
-      tags: [CRM (ERM)]
-      summary: Listar clientes (ERM/Admin)
+      tags: [CRM (ERP)]
+      summary: Listar clientes (ERP/Admin)
       security: [{ bearerAuth: [] }]
       parameters:
         - name: email
@@ -69,17 +69,17 @@ paths:
           in: query
           schema: { type: boolean }
       responses:
-        '200':
+        "200":
           description: Listado de clientes.
           content:
             application/json:
               schema:
                 type: array
-                items: { $ref: '#/components/schemas/Customer' }
+                items: { $ref: "#/components/schemas/Customer" }
 
   /crm/customers/{customerId}:
     get:
-      tags: [CRM (ERM)]
+      tags: [CRM (ERP)]
       summary: Ver detalle exhaustivo de un cliente
       security: [{ bearerAuth: [] }]
       parameters:
@@ -88,14 +88,14 @@ paths:
           required: true
           schema: { type: string, format: uuid }
       responses:
-        '200':
+        "200":
           description: Detalle del cliente.
           content:
             application/json:
-              schema: { $ref: '#/components/schemas/CustomerDetail' }
+              schema: { $ref: "#/components/schemas/CustomerDetail" }
     patch:
-      tags: [CRM (ERM)]
-      summary: Modificar estado o tipo de cliente (ERM)
+      tags: [CRM (ERP)]
+      summary: Modificar estado o tipo de cliente (ERP)
       security: [{ bearerAuth: [] }]
       parameters:
         - name: customerId
@@ -111,7 +111,7 @@ paths:
                 tipoCliente: { type: string, enum: [estandar, vip, staff] }
                 activo: { type: boolean }
       responses:
-        '200':
+        "200":
           description: Cliente modificado.
 
 components:
@@ -137,11 +137,11 @@ components:
 
     CustomerDetail:
       allOf:
-        - $ref: '#/components/schemas/Customer'
+        - $ref: "#/components/schemas/Customer"
         - type: object
           properties:
-            membresia: { $ref: '#/components/schemas/Membership' }
-            # Notas: Pedidos se consultarían al orders-service usualmente, 
+            membresia: { $ref: "#/components/schemas/Membership" }
+            # Notas: Pedidos se consultarían al orders-service usualmente,
             # pero aquí se podría incluir un resumen.
 
     CustomerUpdateInput:
