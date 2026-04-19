@@ -1,0 +1,316 @@
+services:
+  # ─── Infrastructure ───────────────────────────────────────────────────────────
+  consul:
+    image: consul:1.15.4
+    container_name: konig-consul
+    restart: unless-stopped
+    ports:
+      - "8500:8500" # UI + API
+    command: agent -dev -client=0.0.0.0 -ui
+    networks:
+      - konig-network
+    healthcheck:
+      test: ["CMD", "consul", "members"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: konig-rabbitmq
+    restart: unless-stopped
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-konig}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS:-konigpass}
+    networks:
+      - konig-network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  # ─── API Gateway (Public Entry Point) ─────────────────────────────────────────
+  api-gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE_NAME: api-gateway
+        PORT: 3000
+    container_name: konig-api-gateway
+    restart: unless-stopped
+    ports:
+      - "${GATEWAY_PORT:-3000}:3000"
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      GATEWAY_PORT: 3000
+      CONSUL_URL: http://consul:8500
+      # OpenTelemetry Auto-Instrumentation
+      OTEL_EXPORTER_OTLP_ENDPOINT: "http://alloy:4318"
+      OTEL_SERVICE_NAME: "api-gateway"
+      OTEL_RESOURCE_ATTRIBUTES: "service.namespace=konig,deployment.environment=${NODE_ENV}"
+    depends_on:
+      consul:
+        condition: service_healthy
+      alloy:
+        condition: service_started
+    networks:
+      - konig-network
+
+  # ─── Catalog Service ──────────────────────────────────────────────────────────
+  catalog-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE_NAME: catalog-service
+    container_name: konig-catalog-service
+    restart: unless-stopped
+    environment: &service-env
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: 3004
+      CONSUL_URL: http://consul:8500
+      DATABASE_URL: ${DATABASE_URL}
+      DIRECT_URL: ${DIRECT_URL}
+      OTEL_EXPORTER_OTLP_ENDPOINT: "http://alloy:4318"
+      OTEL_RESOURCE_ATTRIBUTES: "service.namespace=konig,deployment.environment=${NODE_ENV}"
+      RABBITMQ_URL: amqp://${RABBITMQ_USER:-konig}:${RABBITMQ_PASS:-konigpass}@rabbitmq:5672
+    depends_on:
+      consul:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      alloy:
+        condition: service_started
+    networks:
+      - konig-network
+
+  # ─── Customers Service ────────────────────────────────────────────────────────
+  customers-service:
+    build:
+      {
+        context: .,
+        dockerfile: Dockerfile,
+        args: { SERVICE_NAME: customers-service },
+      }
+    container_name: konig-customers-service
+    restart: unless-stopped
+    environment: *service-env
+    depends_on:
+      consul: { condition: service_healthy }
+      rabbitmq: { condition: service_healthy }
+      alloy: { condition: service_started }
+    networks: [konig-network]
+
+  # ─── Finance Service ──────────────────────────────────────────────────────────
+  finance-service:
+    build:
+      {
+        context: .,
+        dockerfile: Dockerfile,
+        args: { SERVICE_NAME: finance-service },
+      }
+    container_name: konig-finance-service
+    restart: unless-stopped
+    environment: *service-env
+    depends_on:
+      consul: { condition: service_healthy }
+      rabbitmq: { condition: service_healthy }
+      alloy: { condition: service_started }
+    networks: [konig-network]
+
+  # ─── HR Service ───────────────────────────────────────────────────────────────
+  hr-service:
+    build:
+      { context: ., dockerfile: Dockerfile, args: { SERVICE_NAME: hr-service } }
+    container_name: konig-hr-service
+    restart: unless-stopped
+    environment: *service-env
+    depends_on:
+      consul: { condition: service_healthy }
+      rabbitmq: { condition: service_healthy }
+      alloy: { condition: service_started }
+    networks: [konig-network]
+
+  # ─── Marketing Service ────────────────────────────────────────────────────────
+  marketing-service:
+    build:
+      {
+        context: .,
+        dockerfile: Dockerfile,
+        args: { SERVICE_NAME: marketing-service },
+      }
+    container_name: konig-marketing-service
+    restart: unless-stopped
+    environment: *service-env
+    depends_on:
+      consul: { condition: service_healthy }
+      rabbitmq: { condition: service_healthy }
+      alloy: { condition: service_started }
+    networks: [konig-network]
+
+  # ─── Orders Service ───────────────────────────────────────────────────────────
+  orders-service:
+    build:
+      {
+        context: .,
+        dockerfile: Dockerfile,
+        args: { SERVICE_NAME: orders-service },
+      }
+    container_name: konig-orders-service
+    restart: unless-stopped
+    environment: *service-env
+    depends_on:
+      consul: { condition: service_healthy }
+      rabbitmq: { condition: service_healthy }
+      alloy: { condition: service_started }
+    networks: [konig-network]
+
+  # ─── Production Service ───────────────────────────────────────────────────────
+  production-service:
+    build:
+      {
+        context: .,
+        dockerfile: Dockerfile,
+        args: { SERVICE_NAME: production-service },
+      }
+    container_name: konig-production-service
+    restart: unless-stopped
+    environment: *service-env
+    depends_on:
+      consul: { condition: service_healthy }
+      rabbitmq: { condition: service_healthy }
+      alloy: { condition: service_started }
+    networks: [konig-network]
+
+  # ─── Observability (LGTM Stack) ──────────────────────────────────────────
+  alloy:
+    image: grafana/alloy:latest
+    container_name: konig-alloy
+    restart: unless-stopped
+    ports:
+      - "12345:12345" # UI
+      - "4317:4317" # OTLP gRPC
+      - "4318:4318" # OTLP HTTP
+    volumes:
+      - ./infra/alloy/config.alloy:/etc/alloy/config.alloy
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    command: run --server.http.listen-addr=0.0.0.0:12345 /etc/alloy/config.alloy
+    networks:
+      - konig-network
+
+  mimir:
+    image: grafana/mimir:latest
+    container_name: konig-mimir
+    restart: unless-stopped
+    ports:
+      - "9009:9009"
+    volumes:
+      - ./infra/mimir/mimir-config.yml:/etc/mimir/mimir.yaml
+      - mimir_data:/data
+    command: -config.file=/etc/mimir/mimir.yaml
+    depends_on:
+      createbuckets:
+        condition: service_completed_successfully
+    networks:
+      - konig-network
+
+  tempo:
+    image: grafana/tempo:2.6.1
+    container_name: konig-tempo
+    restart: unless-stopped
+    ports:
+      - "3200:3200" # Search / UI
+    volumes:
+      - ./infra/tempo/tempo-config.yml:/etc/tempo.yaml
+      - tempo_data:/var/tempo
+    command: -config.file=/etc/tempo.yaml
+    networks:
+      - konig-network
+
+  loki:
+    image: grafana/loki:latest
+    container_name: konig-loki
+    restart: unless-stopped
+    ports:
+      - "3101:3100"
+    volumes:
+      - ./infra/loki/loki-config.yml:/etc/loki/local-config.yaml
+      - loki_data:/loki
+    networks:
+      - konig-network
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: konig-grafana
+    restart: unless-stopped
+    ports:
+      - "3100:3000"
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-admin}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - ./infra/grafana/provisioning:/etc/grafana/provisioning
+      - grafana_data:/var/lib/grafana
+    networks:
+      - konig-network
+    depends_on:
+      - mimir
+      - tempo
+      - loki
+
+  minio:
+    image: minio/minio:latest
+    container_name: konig-minio
+    restart: unless-stopped
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: mimir
+      MINIO_ROOT_PASSWORD: mimirpass
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio_data:/data
+    networks:
+      - konig-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  createbuckets:
+    image: alpine:3.19
+    container_name: konig-createbuckets
+    depends_on:
+      minio:
+        condition: service_healthy
+    networks:
+      - konig-network
+    entrypoint: >
+      /bin/sh -c "
+      apk add --no-cache curl aws-cli &&
+      aws --endpoint-url http://minio:9000 s3 mb s3://mimir --region us-east-1 2>/dev/null || true;
+      exit 0;
+      "
+    environment:
+      AWS_ACCESS_KEY_ID: mimir
+      AWS_SECRET_ACCESS_KEY: mimirpass
+      AWS_DEFAULT_REGION: us-east-1
+
+volumes:
+  mimir_data:
+  tempo_data:
+  loki_data:
+  grafana_data:
+  minio_data:
+
+networks:
+  konig-network:
+    driver: bridge

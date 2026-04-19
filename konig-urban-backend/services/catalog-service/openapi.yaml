@@ -1,0 +1,257 @@
+openapi: 3.0.0
+info:
+  title: König Urban - Catalog Service
+  description: Microservicio encargado de la gestión del catálogo de productos, colecciones y lanzamientos exclusivos (Drops).
+  version: 1.0.0
+
+servers:
+  - url: /api/v1/catalog
+    description: Catalog Service Base URL
+
+tags:
+  - name: Products
+    description: Gestión de prendas y productos individuales.
+  - name: Categories
+    description: Agrupación jerárquica de productos.
+  - name: Collections
+    description: Colecciones temáticas y estacionales.
+  - name: Drops
+    description: Gestión de lanzamientos limitados y exclusivos.
+  - name: Inventory
+    description: Control de unidades numeradas y stock real-time (ERM Only).
+
+paths:
+  /products:
+    get:
+      tags: [Products]
+      summary: Listar productos con filtros
+      parameters:
+        - name: categoryId
+          in: query
+          schema: { type: string, format: uuid }
+        - name: collectionId
+          in: query
+          schema: { type: string, format: uuid }
+        - name: search
+          in: query
+          schema: { type: string }
+        - name: active
+          in: query
+          schema: { type: boolean, default: true }
+      responses:
+        '200':
+          description: Lista de productos obtenida exitosamente.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Product' }
+    post:
+      tags: [Products]
+      summary: Crear nuevo producto (ERM/Admin)
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ProductInput' }
+      responses:
+        '201':
+          description: Producto creado.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Product' }
+
+  /products/{productId}:
+    get:
+      tags: [Products]
+      summary: Obtener detalles de un producto
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Detalle del producto.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ProductDetail' }
+    patch:
+      tags: [Products]
+      summary: Actualizar producto (ERM/Admin)
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ProductInput' }
+      responses:
+        '200':
+          description: Producto actualizado.
+
+  /categories:
+    get:
+      tags: [Categories]
+      summary: Obtener todas las categorías
+      responses:
+        '200':
+          description: Lista de categorías.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Category' }
+
+  /collections:
+    get:
+      tags: [Collections]
+      summary: Listar colecciones
+      responses:
+        '200':
+          description: Lista de colecciones.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Collection' }
+
+  /drops:
+    get:
+      tags: [Drops]
+      summary: Listar lanzamientos activos y próximos
+      responses:
+        '200':
+          description: Lista de drops.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Drop' }
+    post:
+      tags: [Drops]
+      summary: Programar nuevo drop (ERM/Admin)
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/DropInput' }
+      responses:
+        '201':
+          description: Drop programado correctly.
+
+  /inventory/uids:
+    get:
+      tags: [Inventory]
+      summary: Consultar identificadores únicos y disponibilidad (ERM)
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: productId
+          in: query
+          schema: { type: string, format: uuid }
+        - name: status
+          in: query
+          schema: { type: string, enum: [disponible, reservado, vendido] }
+      responses:
+        '200':
+          description: Estado del inventario detallado.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/UniqueItemIdentifier' }
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Product:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        nombre: { type: string }
+        precio: { type: number, format: decimal }
+        imagenUrl: { type: string, format: uri }
+        coleccionId: { type: string, format: uuid }
+        categoriaId: { type: string, format: uuid }
+        activo: { type: boolean }
+
+    ProductDetail:
+      allOf:
+        - $ref: '#/components/schemas/Product'
+        - type: object
+          properties:
+            descripcion: { type: string }
+            gramajeAlgodon: { type: integer }
+            material: { type: string }
+            createdAt: { type: string, format: date-time }
+
+    ProductInput:
+      type: object
+      required: [nombre, precio, coleccionId, categoriaId]
+      properties:
+        nombre: { type: string }
+        descripcion: { type: string }
+        precio: { type: number }
+        gramajeAlgodon: { type: integer }
+        material: { type: string }
+        imagenUrl: { type: string }
+        coleccionId: { type: string, format: uuid }
+        categoriaId: { type: string, format: uuid }
+        activo: { type: boolean }
+
+    Category:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        nombre: { type: string }
+        descripcion: { type: string }
+
+    Collection:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        nombre: { type: string }
+        temporada: { type: string }
+        fechaLanzamiento: { type: string, format: date }
+        estado: { type: string, enum: [borrador, publicada, agotada] }
+
+    Drop:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        coleccionId: { type: string, format: uuid }
+        fechaInicio: { type: string, format: date-time }
+        fechaFin: { type: string, format: date-time }
+        activo: { type: boolean }
+        descripcion: { type: string }
+
+    DropInput:
+      type: object
+      required: [coleccionId, fechaInicio, fechaFin]
+      properties:
+        coleccionId: { type: string, format: uuid }
+        fechaInicio: { type: string, format: date-time }
+        fechaFin: { type: string, format: date-time }
+        activo: { type: boolean }
+        descripcion: { type: string }
+
+    UniqueItemIdentifier:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        prendaId: { type: string, format: uuid }
+        uidCodigo: { type: string }
+        numeroSerie: { type: integer }
+        totalSerie: { type: integer }
+        estado: { type: string, enum: [disponible, reservado, vendido] }
+        fechaGeneracion: { type: string, format: date-time }
