@@ -1,7 +1,6 @@
 import { Controller, Get, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { DiscoveryClientModule, LoggerModule, MetricsModule } from '@konig/shared';
-import { ProxyModule } from './modules/proxy/proxy.module';
 
 @Controller('health')
 class HealthController {
@@ -12,7 +11,7 @@ class HealthController {
 }
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true }), LoggerModule, DiscoveryClientModule, ProxyModule, MetricsModule],
+  imports: [ConfigModule.forRoot({ isGlobal: true }), LoggerModule, DiscoveryClientModule, MetricsModule],
   controllers: [HealthController],
 })
 export class AppModule { }

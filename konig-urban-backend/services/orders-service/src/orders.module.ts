@@ -3,7 +3,7 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { PrismaService } from './infrastructure/database/prisma.service';
 import { ShopperOrderController } from './presentation/controllers/shopper.controller';
 import { ShipmentController } from './presentation/controllers/shipments.controller';
-import { ErmOrderController } from './presentation/controllers/erm.controller';
+import { ErpOrderController } from './presentation/controllers/erp.controller';
 import { CreateOrderHandler, UpdateOrderStatusHandler } from './application/commands/orders.handlers';
 import {
   GetAdminOrdersHandler,
@@ -22,7 +22,7 @@ const QueryHandlers = [
 
 @Module({
   imports: [CqrsModule],
-  controllers: [ShopperOrderController, ShipmentController, ErmOrderController],
+  controllers: [ShopperOrderController, ShipmentController, ErpOrderController],
   providers: [PrismaService, ...CommandHandlers, ...QueryHandlers],
 })
-export class OrdersModule {}
+export class OrdersModule { }

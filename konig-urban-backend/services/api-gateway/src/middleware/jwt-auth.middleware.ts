@@ -3,8 +3,9 @@ import { Request, Response, NextFunction } from 'express';
 
 // Public routes that bypass JWT verification
 const PUBLIC_ROUTES: Array<{ method: string; prefix: string }> = [
-  { method: 'GET',  prefix: '/health' },
-  { method: 'GET',  prefix: '/api/docs' },
+  { method: 'GET', prefix: '/health' },
+  { method: 'GET', prefix: '/api/docs' },
+  { method: 'GET', prefix: '/docs/yaml' },
 ];
 
 function isPublicRoute(method: string, path: string): boolean {
@@ -30,6 +31,16 @@ export async function jwtAuthMiddleware(
   res: Response,
   next: NextFunction,
 ): Promise<void> {
+  // 🚀 DEVELOPMENT BYPASS: Allow absolutely all requests in development mode
+  if (process.env.NODE_ENV === 'development') {
+    // Inject mock headers to ensure downstream services have identity context
+    req.headers['x-user-id'] = '00000000-0000-0000-0000-000000000000';
+    req.headers['x-user-email'] = 'professor-tester@konigurban.dev';
+    req.headers['x-user-role'] = 'admin'; // Grant full access to ERP/HR/Production
+    next();
+    return;
+  }
+
   if (isPublicRoute(req.method, req.path)) {
     next();
     return;
@@ -54,15 +65,15 @@ export async function jwtAuthMiddleware(
     const role = data.user.app_metadata?.role || data.user.user_metadata?.role || 'user';
 
     // 1. Inject verified identity as headers for downstream services to consume
-    req.headers['x-user-id']    = data.user.id;
+    req.headers['x-user-id'] = data.user.id;
     req.headers['x-user-email'] = data.user.email ?? '';
-    req.headers['x-user-role']  = role;
+    req.headers['x-user-role'] = role;
 
     // 2. Perform rudimentary RBAC (Role Based Access Control)
-    const isAdminRoute = req.path.includes('/erm/') || 
-                         req.path.includes('/admin/') ||
-                         req.path.includes('/api/v1/hr') ||
-                         req.path.includes('/api/v1/production');
+    const isAdminRoute = req.path.includes('/erp/') ||
+      req.path.includes('/admin/') ||
+      req.path.includes('/api/v1/hr') ||
+      req.path.includes('/api/v1/production');
 
     if (isAdminRoute && role !== 'admin') {
       res.status(403).json({ error: 'Forbidden: Admin access required for this ERP endpoint' });
