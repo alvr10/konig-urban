@@ -289,7 +289,7 @@ services:
       POSTGRES_USER: odoo
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
-      - odoo_db_data:/var/lib/postgresql/data/pgdata
+      - odoo-db-data:/var/lib/postgresql/data/pgdata
     networks:
       - konig-network
 
@@ -306,7 +306,8 @@ services:
       - USER=odoo
       - PASSWORD=odoo
     volumes:
-      - odoo_data:/var/lib/odoo
+      - odoo-web-data:/var/lib/odoo
+      - ./addons:/mnt/extra-addons
     networks:
       - konig-network
 
@@ -333,8 +334,8 @@ volumes:
   loki_data:
   grafana_data:
   minio_data:
-  odoo_data:
-  odoo_db_data:
+  odoo-web-data:
+  odoo-db-data:
 
 networks:
   konig-network:
