@@ -278,6 +278,38 @@ services:
       timeout: 5s
       retries: 5
 
+  # ─── ERP (Odoo) ───────────────────────────────────────────────────────────────
+  odoo-db:
+    image: postgres:15
+    container_name: konig-odoo-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_PASSWORD: odoo
+      POSTGRES_USER: odoo
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - odoo_db_data:/var/lib/postgresql/data/pgdata
+    networks:
+      - konig-network
+
+  odoo:
+    image: odoo:17.0
+    container_name: konig-odoo
+    restart: unless-stopped
+    depends_on:
+      - odoo-db
+    ports:
+      - "8069:8069"
+    environment:
+      - HOST=odoo-db
+      - USER=odoo
+      - PASSWORD=odoo
+    volumes:
+      - odoo_data:/var/lib/odoo
+    networks:
+      - konig-network
+
   createbuckets:
     image: alpine:3.19
     container_name: konig-createbuckets
@@ -301,6 +333,8 @@ volumes:
   loki_data:
   grafana_data:
   minio_data:
+  odoo_data:
+  odoo_db_data:
 
 networks:
   konig-network:
