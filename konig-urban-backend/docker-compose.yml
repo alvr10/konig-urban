@@ -279,9 +279,9 @@ services:
       retries: 5
 
   # ─── ERP (Odoo) ───────────────────────────────────────────────────────────────
-  odoo-db:
+  db:
     image: postgres:15
-    container_name: konig-odoo-db
+    container_name: konig-db
     restart: unless-stopped
     environment:
       POSTGRES_DB: postgres
@@ -293,16 +293,16 @@ services:
     networks:
       - konig-network
 
-  odoo:
+  web:
     image: odoo:17.0
-    container_name: konig-odoo
+    container_name: konig-web
     restart: unless-stopped
     depends_on:
-      - odoo-db
+      - db
     ports:
       - "8069:8069"
     environment:
-      - HOST=odoo-db
+      - HOST=db
       - USER=odoo
       - PASSWORD=odoo
     volumes:
