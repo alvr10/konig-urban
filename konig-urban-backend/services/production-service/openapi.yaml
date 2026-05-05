@@ -1,0 +1,206 @@
+openapi: 3.0.0
+info:
+  title: König Urban - Production Service
+  description: Microservicio encargado de la cadena de suministro, gestión de proveedores, manufactura y aseguramiento de la calidad (QA).
+  version: 1.0.0
+
+servers:
+  - url: /api/v1/production
+    description: Production Service Base URL
+
+tags:
+  - name: Suppliers
+    description: Gestión estratégica de proveedores de tejidos y confección.
+  - name: Purchase Orders
+    description: Operativa de compras y reposición de materiales (Telas, Algodón, Packaging).
+  - name: Quality Control
+    description: Inspección exhaustiva de prendas terminadas para garantizar estándares premium.
+
+paths:
+  /suppliers:
+    get:
+      tags: [Suppliers]
+      summary: Listar todos los proveedores
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: type
+          in: query
+          schema: { type: string, enum: [tejidos, fabricacion, packaging] }
+        - name: active
+          in: query
+          schema: { type: boolean }
+      responses:
+        '200':
+          description: Listado de proveedores.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Supplier' }
+    post:
+      tags: [Suppliers]
+      summary: Registrar nuevo proveedor estratégico
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/SupplierInput' }
+      responses:
+        '201':
+          description: Proveedor creado.
+
+  /purchase-orders:
+    get:
+      tags: [Purchase Orders]
+      summary: Historial de órdenes de compra
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: status
+          in: query
+          schema: { type: string, enum: [borrador, confirmada, recibida, cancelada] }
+      responses:
+        '200':
+          description: Listado de órdenes de compra.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/PurchaseOrder' }
+    post:
+      tags: [Purchase Orders]
+      summary: Crear una nueva orden de compra a proveedor
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/PurchaseOrderInput' }
+      responses:
+        '201':
+          description: Orden de compra registrada.
+
+  /purchase-orders/{orderId}:
+    patch:
+      tags: [Purchase Orders]
+      summary: Confirmar o recibir productos de una orden
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                estado: { type: string, enum: [confirmada, recibida, cancelada] }
+                notas: { type: string }
+      responses:
+        '200':
+          description: Estado de la orden actualizado.
+
+  /quality-checks:
+    get:
+      tags: [Quality Control]
+      summary: Listar inspecciones de calidad realizadas
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200':
+          description: Listado de controles de calidad.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/QualityCheck' }
+    post:
+      tags: [Quality Control]
+      summary: Registrar resultado de inspección para una prenda
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/QualityCheckInput' }
+      responses:
+        '201':
+          description: Inspección registrada satisfactoriamente.
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Supplier:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        nombre: { type: string }
+        tipo: { type: string, enum: [tejidos, fabricacion, packaging] }
+        contacto: { type: string }
+        email: { type: string, format: email }
+        pais: { type: string }
+        activo: { type: boolean }
+        createdAt: { type: string, format: date-time }
+
+    SupplierInput:
+      type: object
+      required: [nombre, tipo, email]
+      properties:
+        nombre: { type: string }
+        tipo: { type: string }
+        contacto: { type: string }
+        email: { type: string }
+        pais: { type: string }
+
+    PurchaseOrder:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        proveedorId: { type: string, format: uuid }
+        fecha: { type: string, format: date }
+        estado: { type: string, enum: [borrador, confirmada, recibida, cancelada] }
+        total: { type: number, format: decimal, nullable: true }
+        notas: { type: string, nullable: true }
+        createdAt: { type: string, format: date-time }
+
+    PurchaseOrderInput:
+      type: object
+      required: [proveedorId, fecha, lineas]
+      properties:
+        proveedorId: { type: string, format: uuid }
+        fecha: { type: string, format: date }
+        notas: { type: string }
+        lineas:
+          type: array
+          items:
+            type: object
+            required: [descripcionMaterial, cantidad, precioUnitario]
+            properties:
+              descripcionMaterial: { type: string }
+              cantidad: { type: integer }
+              precioUnitario: { type: number }
+
+    QualityCheck:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        prendaId: { type: string, format: uuid }
+        inspector: { type: string }
+        fechaRevision: { type: string, format: date-time }
+        resultado: { type: string, enum: [aprobado, rechazado] }
+        notas: { type: string, nullable: true }
+
+    QualityCheckInput:
+      type: object
+      required: [prendaId, inspector, resultado]
+      properties:
+        prendaId: { type: string, format: uuid }
+        inspector: { type: string }
+        resultado: { type: string, enum: [aprobado, rechazado] }
+        notas: { type: string }
