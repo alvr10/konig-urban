@@ -1,0 +1,31 @@
+{
+  "name": "@konig/database",
+  "version": "1.0.0",
+  "private": true,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:seed": "ts-node prisma/execute-dml.ts",
+    "format": "prettier --write \"src/**/*.ts\""
+  },
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.7.0",
+    "@prisma/client": "^7.5.0",
+    "@types/pg": "^8.20.0",
+    "dotenv": "^16.6.1",
+    "pg": "^8.20.0"
+  },
+  "devDependencies": {
+    "prisma": "^7.5.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.0.0",
+    "@konig/config-typescript": "workspace:*",
+    "@konig/config-eslint": "workspace:*",
+    "@konig/config-prettier": "workspace:*",
+    "prettier": "^3.0.0"
+  },
+  "prettier": "@konig/config-prettier"
+}

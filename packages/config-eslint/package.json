@@ -1,0 +1,14 @@
+{
+  "name": "@konig/config-eslint",
+  "version": "1.0.0",
+  "private": true,
+  "license": "MIT",
+  "main": "index.js",
+  "files": [
+    "index.js",
+    "next.js"
+  ],
+  "peerDependencies": {
+    "eslint": ">=9.0.0"
+  }
+}
