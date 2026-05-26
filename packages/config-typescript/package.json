@@ -1,0 +1,10 @@
+{
+  "name": "@konig/config-typescript",
+  "version": "1.0.0",
+  "private": true,
+  "license": "MIT",
+  "main": "",
+  "files": [
+    "base.json"
+  ]
+}
