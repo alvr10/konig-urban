@@ -6,7 +6,7 @@ export class GetInventoryUidsQuery {
     public readonly filters: {
       productId?: string;
       status?: string;
-    }
+    },
   ) {}
 }
 

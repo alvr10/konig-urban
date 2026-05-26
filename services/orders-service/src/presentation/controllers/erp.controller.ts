@@ -9,7 +9,7 @@ export class ErpOrderController {
   constructor(
     private readonly commandBus: CommandBus,
     private readonly queryBus: QueryBus,
-  ) { }
+  ) {}
 
   @Get()
   async getAdminOrders(@Query() filters: AdminOrderFilterDto) {
@@ -17,10 +17,7 @@ export class ErpOrderController {
   }
 
   @Patch(':orderId/status')
-  async updateOrderStatus(
-    @Param('orderId') orderId: string,
-    @Body() dto: UpdateOrderStatusDto,
-  ) {
+  async updateOrderStatus(@Param('orderId') orderId: string, @Body() dto: UpdateOrderStatusDto) {
     return this.commandBus.execute(new UpdateOrderStatusCommand(orderId, dto));
   }
 }

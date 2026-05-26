@@ -1,6 +1,9 @@
 import { Controller, Get, Post, Body, Query } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
-import { GetCategoriesQuery, GetCollectionsQuery } from '../../application/queries/category-collection.queries';
+import {
+  GetCategoriesQuery,
+  GetCollectionsQuery,
+} from '../../application/queries/category-collection.queries';
 import { GetDropsQuery, ScheduleDropCommand } from '../../application/drop.handlers';
 import { GetInventoryUidsQuery } from '../../application/queries/inventory.queries';
 import { DropInputDto } from '../../application/dtos/drop.dto';
@@ -48,10 +51,7 @@ export class InventoryController {
   constructor(private readonly queryBus: QueryBus) {}
 
   @Get()
-  async getInventory(
-    @Query('productId') productId?: string,
-    @Query('status') status?: string,
-  ) {
+  async getInventory(@Query('productId') productId?: string, @Query('status') status?: string) {
     return this.queryBus.execute(new GetInventoryUidsQuery({ productId, status }));
   }
 }

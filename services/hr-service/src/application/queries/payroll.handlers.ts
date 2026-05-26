@@ -14,19 +14,16 @@ export class GetPayrollRecordsHandler implements IQueryHandler<GetPayrollRecords
 
     return this.prisma.nomina.findMany({
       where: whereClause,
-      orderBy: [
-        { periodo: 'desc' },
-        { empleado: { apellidos: 'asc' } }
-      ],
+      orderBy: [{ periodo: 'desc' }, { empleado: { apellidos: 'asc' } }],
       include: {
         empleado: {
           select: {
             nombre: true,
             apellidos: true,
             departamentoId: true,
-          }
-        }
-      }
+          },
+        },
+      },
     });
   }
 }

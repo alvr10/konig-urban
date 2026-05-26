@@ -8,7 +8,7 @@ export class GetProductsQuery {
       collectionId?: string;
       search?: string;
       active?: boolean;
-    }
+    },
   ) {}
 }
 

@@ -10,11 +10,8 @@ export class GetDropsHandler implements IQueryHandler<GetDropsQuery> {
   async execute() {
     return this.prisma.drop.findMany({
       where: {
-        OR: [
-          { activo: true },
-          { fechaInicio: { gt: new Date() } }
-        ]
-      }
+        OR: [{ activo: true }, { fechaInicio: { gt: new Date() } }],
+      },
     });
   }
 }
@@ -27,7 +24,7 @@ export class ScheduleDropCommand {
       fechaFin: string;
       activo?: boolean;
       descripcion?: string;
-    }
+    },
   ) {}
 }
 

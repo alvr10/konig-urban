@@ -1,33 +1,28 @@
-"use client";
+'use client';
 
-import Image from "next/image";
-import { useState, useLayoutEffect, useRef } from "react";
-import styles from "./page.module.css";
-import { NavLink } from "../components/nav-link/nav-link";
-import { IconButton } from "../components/icon-button/icon-button";
-import { ProductCard } from "../components/product-card/product-card";
-import { useCart } from "../context/cart-context";
-import { Product } from "../data/products";
-import { WooCommerceProduct } from "@/types/woocommerce";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { Loader } from "../components/loader/loader";
-import { ImageSequence } from "../components/image-sequence/image-sequence";
-import { Footer } from "../components/footer/footer";
-import {
-  InstagramIcon,
-  FacebookIcon,
-  TwitterIcon,
-  BagIcon,
-} from "../components/icons";
+import Image from 'next/image';
+import { useState, useLayoutEffect, useRef } from 'react';
+import styles from './page.module.css';
+import { NavLink } from '../components/nav-link/nav-link';
+import { IconButton } from '../components/icon-button/icon-button';
+import { ProductCard } from '../components/product-card/product-card';
+import { useCart } from '../context/cart-context';
+import { Product } from '../data/products';
+import { WooCommerceProduct } from '@/types/woocommerce';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { Loader } from '../components/loader/loader';
+import { ImageSequence } from '../components/image-sequence/image-sequence';
+import { Footer } from '../components/footer/footer';
+import { InstagramIcon, FacebookIcon, TwitterIcon, BagIcon } from '../components/icons';
 
 gsap.registerPlugin(ScrollTrigger);
 
 function ProductGridItem({ product }: { product: Product }) {
   const { addItem } = useCart();
-  const [selectedSize, setSelectedSize] = useState(product.sizes[0] || "M");
+  const [selectedSize, setSelectedSize] = useState(product.sizes[0] || 'M');
   const [selectedColor, setSelectedColor] = useState(
-    product.colorMap?.[0]?.name || product.colors?.[0] || "DEFAULT"
+    product.colorMap?.[0]?.name || product.colors?.[0] || 'DEFAULT',
   );
 
   return (
@@ -43,9 +38,7 @@ function ProductGridItem({ product }: { product: Product }) {
       </div>
       <div className={styles.productInfo}>
         <div className={styles.productName}>{product.name}</div>
-        {product.desc && (
-          <div className={styles.productDesc}>{product.desc}</div>
-        )}
+        {product.desc && <div className={styles.productDesc}>{product.desc}</div>}
 
         <div className={styles.selectors}>
           {product.colorMap && product.colorMap.length > 0 && (
@@ -53,13 +46,10 @@ function ProductGridItem({ product }: { product: Product }) {
               {product.colorMap.map((color, idx) => (
                 <span
                   key={idx}
-                  className={`${styles.colorDotWrapper} ${selectedColor === color.name ? styles.activeColor : ""}`}
+                  className={`${styles.colorDotWrapper} ${selectedColor === color.name ? styles.activeColor : ''}`}
                   onClick={() => setSelectedColor(color.name)}
                 >
-                  <span
-                    className={styles.colorDot}
-                    style={{ backgroundColor: color.hex }}
-                  ></span>
+                  <span className={styles.colorDot} style={{ backgroundColor: color.hex }}></span>
                   <span className={styles.colorName}>{color.name}</span>
                 </span>
               ))}
@@ -70,7 +60,7 @@ function ProductGridItem({ product }: { product: Product }) {
             {product.sizes.map((size) => (
               <span
                 key={size}
-                className={`${styles.sizeOption} ${selectedSize === size ? styles.activeSize : ""}`}
+                className={`${styles.sizeOption} ${selectedSize === size ? styles.activeSize : ''}`}
                 onClick={() => setSelectedSize(size)}
               >
                 {size}
@@ -81,7 +71,7 @@ function ProductGridItem({ product }: { product: Product }) {
 
         <div className={styles.productPrice}>
           $
-          {product.price.toLocaleString("en-US", {
+          {product.price.toLocaleString('en-US', {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
           })}
@@ -108,8 +98,8 @@ function ProductGridItem({ product }: { product: Product }) {
 }
 
 function mapWooCommerceToProduct(wc: WooCommerceProduct): Product {
-  let image = "/images/winter-drop/white-puffer-front.png";
-  
+  let image = '/images/winter-drop/white-puffer-front.png';
+
   if (wc.images && wc.images.length > 0) {
     image = wc.images[0].src;
   } else if (wc.description) {
@@ -119,19 +109,22 @@ function mapWooCommerceToProduct(wc: WooCommerceProduct): Product {
     }
   }
 
-  const cleanDesc = wc.description 
-    ? wc.description.replace(/<[^>]*>/g, "").trim().substring(0, 60) 
-    : "";
+  const cleanDesc = wc.description
+    ? wc.description
+        .replace(/<[^>]*>/g, '')
+        .trim()
+        .substring(0, 60)
+    : '';
 
   return {
     id: wc.id.toString(),
     name: wc.name,
-    series: wc.categories?.[0]?.name || "SERIES_01",
+    series: wc.categories?.[0]?.name || 'SERIES_01',
     price: parseFloat(wc.price) || 0,
     image: image,
-    sizes: ["S", "M", "L", "XL"],
-    colors: ["DEFAULT"],
-    desc: cleanDesc || wc.sku || "EXQUISITE PUFFER",
+    sizes: ['S', 'M', 'L', 'XL'],
+    colors: ['DEFAULT'],
+    desc: cleanDesc || wc.sku || 'EXQUISITE PUFFER',
   };
 }
 
@@ -146,21 +139,21 @@ export function HomeClient({ initialProducts }: HomeClientProps) {
 
   // Map live WooCommerce products
   const liveProducts: Product[] = initialProducts.map(mapWooCommerceToProduct);
-  
+
   // Use first product as the featured hero product
   const featuredProduct: Product = liveProducts[0] || {
-    id: "featured",
-    name: "COLLECTION ARTIC 01™",
-    series: "STASIS MK.I",
+    id: 'featured',
+    name: 'COLLECTION ARTIC 01™',
+    series: 'STASIS MK.I',
     price: 899.99,
-    image: "/images/winter-drop/white-puffer-front.png",
-    sizes: ["S", "M", "L", "XL"],
-    colors: ["WHITE", "SILVER"],
-    desc: "AURORA SILVER",
+    image: '/images/winter-drop/white-puffer-front.png',
+    sizes: ['S', 'M', 'L', 'XL'],
+    colors: ['WHITE', 'SILVER'],
+    desc: 'AURORA SILVER',
   };
 
-  const [selectedSize, setSelectedSize] = useState(featuredProduct.sizes[0] || "M");
-  const [selectedColor, setSelectedColor] = useState(featuredProduct.colors[0] || "DEFAULT");
+  const [selectedSize, setSelectedSize] = useState(featuredProduct.sizes[0] || 'M');
+  const [selectedColor, setSelectedColor] = useState(featuredProduct.colors[0] || 'DEFAULT');
 
   // Parallax Refs
   const heroRef = useRef<HTMLElement>(null);
@@ -177,7 +170,7 @@ export function HomeClient({ initialProducts }: HomeClientProps) {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
     };
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener('scroll', handleScroll);
 
     const ctx = gsap.context(() => {
       gsap.set([headerRef.current, leftColRef.current, rightColRef.current], {
@@ -185,44 +178,39 @@ export function HomeClient({ initialProducts }: HomeClientProps) {
       });
 
       const tl = gsap.timeline({
-        defaults: { ease: "power4.out" },
+        defaults: { ease: 'power4.out' },
         onComplete: () => ScrollTrigger.refresh(),
       });
 
-      tl.fromTo(
-        headerRef.current,
-        { y: -50, opacity: 0 },
-        { y: 0, opacity: 1, duration: 1.2 },
-        0.1
-      )
+      tl.fromTo(headerRef.current, { y: -50, opacity: 0 }, { y: 0, opacity: 1, duration: 1.2 }, 0.1)
         .fromTo(
           leftColRef.current?.children ?? [],
           { y: 30, opacity: 0 },
           { y: 0, opacity: 1, duration: 1, stagger: 0.1 },
-          "-=0.8"
+          '-=0.8',
         )
         .fromTo(
           rightColRef.current?.children ?? [],
           { y: 30, opacity: 0 },
           { y: 0, opacity: 1, duration: 1, stagger: 0.1 },
-          "-=0.8"
+          '-=0.8',
         )
         .to(leftColRef.current, { opacity: 1, duration: 0.1 }, 0)
         .to(rightColRef.current, { opacity: 1, duration: 0.1 }, 0)
         .fromTo(
           videoRef.current,
           { opacity: 0, scale: 1.2 },
-          { opacity: 1, scale: 1, duration: 1.5, ease: "power2.out" },
-          0
+          { opacity: 1, scale: 1, duration: 1.5, ease: 'power2.out' },
+          0,
         );
 
       const parallaxDefaults = {
-        ease: "none",
+        ease: 'none',
         immediateRender: false,
         scrollTrigger: {
           trigger: heroRef.current,
-          start: "top top",
-          end: "bottom top",
+          start: 'top top',
+          end: 'bottom top',
           scrub: 1,
         },
       };
@@ -261,14 +249,14 @@ export function HomeClient({ initialProducts }: HomeClientProps) {
           scale: 1,
           duration: 1.2,
           stagger: 0.2,
-          ease: "expo.out",
+          ease: 'expo.out',
           scrollTrigger: {
             trigger: collectionRef.current,
-            start: "top bottom-=100",
-            toggleActions: "play none none none",
+            start: 'top bottom-=100',
+            toggleActions: 'play none none none',
             fastScrollEnd: true,
           },
-        }
+        },
       );
     });
 
@@ -279,7 +267,7 @@ export function HomeClient({ initialProducts }: HomeClientProps) {
     return () => {
       clearTimeout(timer);
       ctx.revert();
-      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener('scroll', handleScroll);
     };
   }, [isLoading]);
 
@@ -311,7 +299,7 @@ export function HomeClient({ initialProducts }: HomeClientProps) {
       <section
         ref={heroRef}
         className={styles.heroSection}
-        style={{ visibility: isLoading ? "hidden" : "visible" }}
+        style={{ visibility: isLoading ? 'hidden' : 'visible' }}
       >
         <div ref={videoRef} className={styles.videoWrapper}>
           <video className={styles.heroVideo} autoPlay loop muted playsInline>
@@ -323,7 +311,7 @@ export function HomeClient({ initialProducts }: HomeClientProps) {
         <div className={styles.content}>
           <header
             ref={headerRef}
-            className={`${styles.header} ${isScrolled ? styles.headerScrolled : ""}`}
+            className={`${styles.header} ${isScrolled ? styles.headerScrolled : ''}`}
           >
             <div className={styles.brand}>KONIG URBAN</div>
             <nav className={styles.nav}>
@@ -347,9 +335,9 @@ export function HomeClient({ initialProducts }: HomeClientProps) {
                 [ SERIES: {featuredProduct.series.toUpperCase()} ]
               </div>
               <h1 ref={titleRef} className={styles.title}>
-                {featuredProduct.name.split(" ").slice(0, -1).join(" ")}
+                {featuredProduct.name.split(' ').slice(0, -1).join(' ')}
                 <br />
-                {featuredProduct.name.split(" ").slice(-1)[0]}
+                {featuredProduct.name.split(' ').slice(-1)[0]}
               </h1>
 
               <div className={styles.optionsGroup}>
@@ -359,7 +347,7 @@ export function HomeClient({ initialProducts }: HomeClientProps) {
                     {featuredProduct.sizes.map((size) => (
                       <span
                         key={size}
-                        className={`${styles.optionValue} ${selectedSize === size ? styles.active : ""}`}
+                        className={`${styles.optionValue} ${selectedSize === size ? styles.active : ''}`}
                         onClick={() => setSelectedSize(size)}
                       >
                         {size}
@@ -367,14 +355,14 @@ export function HomeClient({ initialProducts }: HomeClientProps) {
                     ))}
                   </div>
                 </div>
-                {featuredProduct.colors.length > 0 && featuredProduct.colors[0] !== "DEFAULT" && (
+                {featuredProduct.colors.length > 0 && featuredProduct.colors[0] !== 'DEFAULT' && (
                   <div className={styles.optionRow}>
                     <div className={styles.optionLabel}>COLOUR</div>
                     <div className={styles.optionValues}>
                       {featuredProduct.colors.map((color) => (
                         <span
                           key={color}
-                          className={`${styles.optionValue} ${selectedColor === color ? styles.active : ""}`}
+                          className={`${styles.optionValue} ${selectedColor === color ? styles.active : ''}`}
                           onClick={() => setSelectedColor(color)}
                         >
                           {color}
@@ -404,7 +392,8 @@ export function HomeClient({ initialProducts }: HomeClientProps) {
                 <div className={styles.cartInfo}>
                   <span className={styles.cartLabel}>ADD TO CART</span>
                   <span className={styles.cartPrice}>
-                    ${featuredProduct.price.toLocaleString("en-US", {
+                    $
+                    {featuredProduct.price.toLocaleString('en-US', {
                       minimumFractionDigits: 2,
                     })}
                   </span>
@@ -416,14 +405,18 @@ export function HomeClient({ initialProducts }: HomeClientProps) {
 
             <div ref={rightColRef} className={styles.rightCol}>
               <div className={styles.cardsCarousel}>
-                <ProductCard imageSrc={liveProducts[1]?.image || "/images/winter-drop/white-puffer-front.png"} />
-                <ProductCard imageSrc={liveProducts[2]?.image || "/images/winter-drop/white-puffer-back.png"} />
+                <ProductCard
+                  imageSrc={liveProducts[1]?.image || '/images/winter-drop/white-puffer-front.png'}
+                />
+                <ProductCard
+                  imageSrc={liveProducts[2]?.image || '/images/winter-drop/white-puffer-back.png'}
+                />
               </div>
 
               <div className={styles.pagination}>
                 <span>01</span>
                 <span className={styles.paginationLine}></span>
-                <span>{String(liveProducts.length).padStart(2, "0")}</span>
+                <span>{String(liveProducts.length).padStart(2, '0')}</span>
               </div>
 
               <div className={styles.socialIcons}>
@@ -442,11 +435,7 @@ export function HomeClient({ initialProducts }: HomeClientProps) {
         </div>
       </section>
 
-      <section
-        id="collection"
-        ref={collectionRef}
-        className={styles.collectionSection}
-      >
+      <section id="collection" ref={collectionRef} className={styles.collectionSection}>
         <div className={styles.collectionHeader}>
           <h2 className={styles.collectionTitle}>NEW COLLECTION</h2>
           <div className={styles.collectionNavGroup}>

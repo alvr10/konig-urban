@@ -5,7 +5,8 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "format": "prettier --write \"src/**/*.ts\""
   },
   "dependencies": {
     "consul": "^2.0.1",
@@ -22,11 +23,18 @@
   },
   "peerDependencies": {
     "@nestjs/common": ">=10.0.0",
+    "@nestjs/config": ">=4.0.0",
     "rxjs": ">=7.0.0"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",
     "@types/node": "^20.0.0",
-    "typescript": "^5.0.0"
-  }
+    "typescript": "^5.0.0",
+    "@nestjs/config": "^4.0.0",
+    "@konig/config-typescript": "workspace:*",
+    "@konig/config-eslint": "workspace:*",
+    "@konig/config-prettier": "workspace:*",
+    "prettier": "^3.0.0"
+  },
+  "prettier": "@konig/config-prettier"
 }

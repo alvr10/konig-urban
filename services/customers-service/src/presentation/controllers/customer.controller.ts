@@ -26,7 +26,7 @@ export class CustomersController {
   constructor(
     private readonly commandBus: CommandBus,
     private readonly prisma: PrismaService,
-  ) { }
+  ) {}
 
   @Get('me')
   async getMe(@Headers('x-customer-id') customerId: string) {
@@ -42,10 +42,7 @@ export class CustomersController {
   }
 
   @Patch('me')
-  async updateMe(
-    @Headers('x-customer-id') customerId: string,
-    @Body() body: UpdateMeDto,
-  ) {
+  async updateMe(@Headers('x-customer-id') customerId: string, @Body() body: UpdateMeDto) {
     return this.commandBus.execute(new UpdateMeCommand(customerId, body));
   }
 
@@ -72,12 +69,9 @@ export class CustomersController {
   async getCrmCustomers(@Query() filters: CustomerFilterDto) {
     return this.prisma.cliente.findMany({
       where: {
-        email: filters.email
-          ? { contains: filters.email, mode: 'insensitive' }
-          : undefined,
+        email: filters.email ? { contains: filters.email, mode: 'insensitive' } : undefined,
         tipoCliente: filters.type,
-        activo:
-          filters.active !== undefined ? filters.active === 'true' : undefined,
+        activo: filters.active !== undefined ? filters.active === 'true' : undefined,
       },
       orderBy: {
         fechaRegistro: 'desc',
@@ -106,8 +100,6 @@ export class CustomersController {
     @Param('customerId') customerId: string,
     @Body() body: UpdateCustomerByCrmDto,
   ) {
-    return this.commandBus.execute(
-      new UpdateCustomerByCrmCommand(customerId, body),
-    );
+    return this.commandBus.execute(new UpdateCustomerByCrmCommand(customerId, body));
   }
 }

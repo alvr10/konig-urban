@@ -1,10 +1,6 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { NotFoundException } from '@nestjs/common';
-import {
-  GetDepartmentsQuery,
-  GetEmployeeDetailQuery,
-  GetEmployeesQuery,
-} from './hr.queries';
+import { GetDepartmentsQuery, GetEmployeeDetailQuery, GetEmployeesQuery } from './hr.queries';
 import { PrismaService } from '../../infrastructure/database/prisma.service';
 
 @QueryHandler(GetEmployeesQuery)

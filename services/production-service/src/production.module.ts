@@ -23,4 +23,4 @@ const CommandHandlers = [
   providers: [PrismaService, ...CommandHandlers],
   exports: [PrismaService],
 })
-export class ProductionModule { }
+export class ProductionModule {}

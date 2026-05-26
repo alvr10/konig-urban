@@ -1,6 +1,6 @@
 import { Controller, Get, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { DiscoveryClientModule, MetricsModule } from '@konig/shared';
+import { DiscoveryClientModule, MetricsModule } from '@konig/core-backend';
 import { CatalogModule } from './catalog.module';
 
 @Controller('health')
@@ -16,8 +16,8 @@ class HealthController {
     ConfigModule.forRoot({ isGlobal: true }),
     DiscoveryClientModule,
     MetricsModule,
-    CatalogModule
+    CatalogModule,
   ],
   controllers: [HealthController],
 })
-export class AppModule { }
+export class AppModule {}

@@ -26,10 +26,6 @@ const QueryHandlers = [GetCampaignsHandler, GetCampaignTargetsHandler];
 @Module({
   imports: [CqrsModule],
   controllers: [MarketingController],
-  providers: [
-    PrismaService,
-    ...CommandHandlers,
-    ...QueryHandlers,
-  ],
+  providers: [PrismaService, ...CommandHandlers, ...QueryHandlers],
 })
-export class MarketingModule { }
+export class MarketingModule {}

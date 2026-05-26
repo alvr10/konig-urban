@@ -8,10 +8,11 @@
     "prisma:generate": "prisma generate",
     "prisma:push": "prisma db push",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "format": "prettier --write \"src/**/*.ts\""
   },
   "dependencies": {
-    "@konig/shared": "^1.0.0",
+    "@konig/core-backend": "^1.0.0",
     "@nestjs/common": "^11.0.0",
     "@nestjs/config": "^4.0.0",
     "@nestjs/core": "^11.0.0",
@@ -38,6 +39,11 @@
     "prisma": "^7.5.0",
     "ts-jest": "^29.4.9",
     "ts-node-dev": "^2.0.0",
-    "typescript": "^5.0.0"
-  }
+    "typescript": "^5.0.0",
+    "@konig/config-typescript": "workspace:*",
+    "@konig/config-eslint": "workspace:*",
+    "@konig/config-prettier": "workspace:*",
+    "prettier": "^3.0.0"
+  },
+  "prettier": "@konig/config-prettier"
 }

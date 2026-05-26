@@ -1,6 +1,7 @@
 import { WooCommerceProduct, WooCommerceFetchOptions } from '@/types/woocommerce';
 
-const WOOCOMMERCE_URL = process.env.NEXT_PUBLIC_WOOCOMMERCE_API_URL || 'http://localhost/konigurban.com';
+const WOOCOMMERCE_URL =
+  process.env.NEXT_PUBLIC_WOOCOMMERCE_API_URL || 'http://localhost/konigurban.com';
 const CONSUMER_KEY = process.env.WOOCOMMERCE_CONSUMER_KEY || '';
 const CONSUMER_SECRET = process.env.WOOCOMMERCE_CONSUMER_SECRET || '';
 
@@ -13,7 +14,7 @@ export async function fetchWooCommerce<T>(endpoint: string, options: RequestInit
   const baseUrl = WOOCOMMERCE_URL.replace(/\/$/, '');
   const urlObj = new URL(`${baseUrl}/index.php`);
   urlObj.searchParams.set('rest_route', `/wc/v3/${endpoint.split('?')[0]}`);
-  
+
   // Append credentials as query parameters (safest for local HTTP/CGI setups)
   urlObj.searchParams.set('consumer_key', CONSUMER_KEY);
   urlObj.searchParams.set('consumer_secret', CONSUMER_SECRET);
@@ -36,13 +37,17 @@ export async function fetchWooCommerce<T>(endpoint: string, options: RequestInit
 
   if (!response.ok) {
     const errorBody = await response.text().catch(() => '');
-    throw new Error(`WooCommerce API error: ${response.statusText} (${response.status}) - ${errorBody}`);
+    throw new Error(
+      `WooCommerce API error: ${response.statusText} (${response.status}) - ${errorBody}`,
+    );
   }
 
   return response.json() as Promise<T>;
 }
 
-export async function getProducts(options: WooCommerceFetchOptions = {}): Promise<WooCommerceProduct[]> {
+export async function getProducts(
+  options: WooCommerceFetchOptions = {},
+): Promise<WooCommerceProduct[]> {
   const params = new URLSearchParams();
   if (options.page) params.append('page', options.page.toString());
   if (options.per_page) params.append('per_page', options.per_page.toString());

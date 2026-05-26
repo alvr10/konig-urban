@@ -1,13 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  HttpCode,
-  Param,
-  Post,
-  Put,
-  Query,
-} from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Param, Post, Put, Query } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import {
   AddCampaignTargetDto,
@@ -25,7 +16,6 @@ import {
   GetCampaignsQuery,
   GetCampaignTargetsQuery,
 } from '../../application/queries/campaign.queries';
-
 
 @Controller('campaigns')
 export class MarketingController {
@@ -45,10 +35,7 @@ export class MarketingController {
   }
 
   @Put(':campaignId')
-  async updateCampaign(
-    @Param('campaignId') campaignId: string,
-    @Body() body: UpdateCampaignDto,
-  ) {
+  async updateCampaign(@Param('campaignId') campaignId: string, @Body() body: UpdateCampaignDto) {
     return this.commandBus.execute(new UpdateCampaignCommand(campaignId, body));
   }
 
@@ -62,9 +49,7 @@ export class MarketingController {
     @Param('campaignId') campaignId: string,
     @Body() body: AddCampaignTargetDto,
   ) {
-    return this.commandBus.execute(
-      new AddCampaignTargetCommand(campaignId, body),
-    );
+    return this.commandBus.execute(new AddCampaignTargetCommand(campaignId, body));
   }
 
   @Post(':campaignId/send')

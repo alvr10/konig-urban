@@ -13,7 +13,7 @@ export interface StandardResponse<T> {
 export class TransformInterceptor<T> implements NestInterceptor<T, StandardResponse<T>> {
   intercept(context: ExecutionContext, next: CallHandler): Observable<StandardResponse<T>> {
     return next.handle().pipe(
-      map(data => ({
+      map((data) => ({
         success: true as const,
         statusCode: context.switchToHttp().getResponse().statusCode,
         data,

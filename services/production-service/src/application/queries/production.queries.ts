@@ -1,7 +1,4 @@
-import {
-  PurchaseOrderFilterDto,
-  SupplierFilterDto,
-} from '../dtos/production.dto';
+import { PurchaseOrderFilterDto, SupplierFilterDto } from '../dtos/production.dto';
 
 export class GetSuppliersQuery {
   constructor(public readonly filters: SupplierFilterDto) {}

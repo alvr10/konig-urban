@@ -4,7 +4,10 @@ import { PrismaService } from './infrastructure/database/prisma.service';
 import { ShopperOrderController } from './presentation/controllers/shopper.controller';
 import { ShipmentController } from './presentation/controllers/shipments.controller';
 import { ErpOrderController } from './presentation/controllers/erp.controller';
-import { CreateOrderHandler, UpdateOrderStatusHandler } from './application/commands/orders.handlers';
+import {
+  CreateOrderHandler,
+  UpdateOrderStatusHandler,
+} from './application/commands/orders.handlers';
 import {
   GetAdminOrdersHandler,
   GetOrderDetailHandler,
@@ -25,4 +28,4 @@ const QueryHandlers = [
   controllers: [ShopperOrderController, ShipmentController, ErpOrderController],
   providers: [PrismaService, ...CommandHandlers, ...QueryHandlers],
 })
-export class OrdersModule { }
+export class OrdersModule {}

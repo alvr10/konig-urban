@@ -9,9 +9,7 @@ const PUBLIC_ROUTES: Array<{ method: string; prefix: string }> = [
 ];
 
 function isPublicRoute(method: string, path: string): boolean {
-  return PUBLIC_ROUTES.some(
-    (r) => r.method === method && path.startsWith(r.prefix),
-  );
+  return PUBLIC_ROUTES.some((r) => r.method === method && path.startsWith(r.prefix));
 }
 
 let supabase: SupabaseClient | null = null;
@@ -70,7 +68,8 @@ export async function jwtAuthMiddleware(
     req.headers['x-user-role'] = role;
 
     // 2. Perform rudimentary RBAC (Role Based Access Control)
-    const isAdminRoute = req.path.includes('/erp/') ||
+    const isAdminRoute =
+      req.path.includes('/erp/') ||
       req.path.includes('/admin/') ||
       req.path.includes('/api/v1/hr') ||
       req.path.includes('/api/v1/production');

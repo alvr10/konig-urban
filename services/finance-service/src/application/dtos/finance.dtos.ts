@@ -1,4 +1,3 @@
-import { Type } from 'class-transformer';
 import { IsDateString, IsEnum, IsNumber, IsOptional, IsUUID, Min } from 'class-validator';
 
 export class UpdateMarginDto {

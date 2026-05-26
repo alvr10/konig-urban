@@ -103,7 +103,7 @@ export class CreateOrderHandler implements ICommandHandler<CreateOrderCommand> {
           stripeSessionUrl: session.url,
         };
       } catch (error) {
-        // Since it's a mock for a university project, if Stripe throws due to invalid key, 
+        // Since it's a mock for a university project, if Stripe throws due to invalid key,
         // we'll mock the return to ensure the flow isn't completely blocked if the env var is missing.
         console.warn('Stripe generation failed, ensuring test completion mock', error.message);
         return {
@@ -148,8 +148,8 @@ export class UpdateOrderStatusHandler implements ICommandHandler<UpdateOrderStat
               pedidoId: orderId,
               trackingUrl: data.trackingUrl,
               operadorLogistico: data.operadorLogistico,
-              estadoEnvio: 'en_transito'
-            }
+              estadoEnvio: 'en_transito',
+            },
           });
         } else {
           await tx.envio.update({
@@ -158,9 +158,10 @@ export class UpdateOrderStatusHandler implements ICommandHandler<UpdateOrderStat
               trackingUrl: data.trackingUrl ?? pedido.envio.trackingUrl,
               operadorLogistico: data.operadorLogistico ?? pedido.envio.operadorLogistico,
               // If we are adding tracking, organically switch to en_transito if still pendiente
-              estadoEnvio: pedido.envio.estadoEnvio === 'pendiente' ? 'en_transito' : pedido.envio.estadoEnvio,
+              estadoEnvio:
+                pedido.envio.estadoEnvio === 'pendiente' ? 'en_transito' : pedido.envio.estadoEnvio,
               fechaEnvio: pedido.envio.fechaEnvio ? pedido.envio.fechaEnvio : new Date(),
-            }
+            },
           });
         }
       }

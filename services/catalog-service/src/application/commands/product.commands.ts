@@ -10,13 +10,13 @@ export class CreateProductCommand {
       coleccionId: string;
       categoriaId: string;
       activo?: boolean;
-    }
+    },
   ) {}
 }
 
 export class UpdateProductCommand {
   constructor(
     public readonly productId: string,
-    public readonly data: Partial<CreateProductCommand['data']>
+    public readonly data: Partial<CreateProductCommand['data']>,
   ) {}
 }

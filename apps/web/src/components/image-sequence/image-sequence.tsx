@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { useEffect, useRef, useState, useCallback } from "react";
-import Image from "next/image";
-import styles from "./image-sequence.module.css";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useEffect, useRef, useState, useCallback } from 'react';
+import Image from 'next/image';
+import styles from './image-sequence.module.css';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -14,11 +14,7 @@ interface ImageSequenceProps {
   extension: string; // e.g. "png"
 }
 
-export const ImageSequence = ({
-  frameCount,
-  basePath,
-  extension,
-}: ImageSequenceProps) => {
+export const ImageSequence = ({ frameCount, basePath, extension }: ImageSequenceProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const stickyRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -33,7 +29,7 @@ export const ImageSequence = ({
   // Pad frame number: 1 -> 001
   const getFrameUrl = useCallback(
     (index: number) => {
-      const paddedIndex = index.toString().padStart(3, "0");
+      const paddedIndex = index.toString().padStart(3, '0');
       return `${basePath}${paddedIndex}.${extension}`;
     },
     [basePath, extension],
@@ -61,8 +57,7 @@ export const ImageSequence = ({
   // Setup GSAP animation
   useEffect(() => {
     const container = containerRef.current;
-    if (!isLoaded || !container || !canvasRef.current || !stickyRef.current)
-      return;
+    if (!isLoaded || !container || !canvasRef.current || !stickyRef.current) return;
 
     const obj = { frame: 1 };
 
@@ -70,22 +65,22 @@ export const ImageSequence = ({
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: container,
-        start: "top top",
-        end: "+=350%", // Increased distance for sequence + shrink
+        start: 'top top',
+        end: '+=350%', // Increased distance for sequence + shrink
         scrub: 0.5,
         pin: true,
         anticipatePin: 1,
         onEnter: () => {
-          gsap.to("header", { yPercent: -100, autoAlpha: 0, duration: 0.4 });
+          gsap.to('header', { yPercent: -100, autoAlpha: 0, duration: 0.4 });
         },
         onLeave: () => {
-          gsap.to("header", { yPercent: 0, autoAlpha: 1, duration: 0.4 });
+          gsap.to('header', { yPercent: 0, autoAlpha: 1, duration: 0.4 });
         },
         onEnterBack: () => {
-          gsap.to("header", { yPercent: -100, autoAlpha: 0, duration: 0.4 });
+          gsap.to('header', { yPercent: -100, autoAlpha: 0, duration: 0.4 });
         },
         onLeaveBack: () => {
-          gsap.to("header", { yPercent: 0, autoAlpha: 1, duration: 0.4 });
+          gsap.to('header', { yPercent: 0, autoAlpha: 1, duration: 0.4 });
         },
       },
     });
@@ -96,8 +91,8 @@ export const ImageSequence = ({
     // Phase 1: Image sequence
     tl.to(obj, {
       frame: frameCount,
-      snap: "frame",
-      ease: "none",
+      snap: 'frame',
+      ease: 'none',
       duration: 1,
       onUpdate: () => {
         setCurrentFrame(Math.floor(obj.frame));
@@ -111,7 +106,7 @@ export const ImageSequence = ({
         opacity: 0,
         y: -30,
         duration: 0.1,
-        ease: "power2.in",
+        ease: 'power2.in',
       },
       0,
     ); // Start immediately at 0
@@ -130,11 +125,7 @@ export const ImageSequence = ({
       );
 
       // Exit
-      tl.to(
-        point,
-        { opacity: 0, x: i % 2 === 0 ? -20 : 20, duration: 0.1 },
-        endTime,
-      );
+      tl.to(point, { opacity: 0, x: i % 2 === 0 ? -20 : 20, duration: 0.1 }, endTime);
     });
 
     // Phase 2: Shrink and grayscale
@@ -142,11 +133,11 @@ export const ImageSequence = ({
       stickyRef.current,
       {
         scale: 0.33,
-        filter: "grayscale(1)",
+        filter: 'grayscale(1)',
         duration: 0.5,
-        ease: "power2.inOut",
+        ease: 'power2.inOut',
       },
-      "+=0.1",
+      '+=0.1',
     );
 
     // Reveal logo during shrink
@@ -154,15 +145,15 @@ export const ImageSequence = ({
       logoRef.current,
       {
         opacity: 0,
-        clipPath: "inset(0 100% 0 0)", // Wipe from left to right
+        clipPath: 'inset(0 100% 0 0)', // Wipe from left to right
       },
       {
         opacity: 1,
-        clipPath: "inset(0 0% 0 0)",
+        clipPath: 'inset(0 0% 0 0)',
         duration: 0.5,
-        ease: "power2.out",
+        ease: 'power2.out',
       },
-      "<", // Start at the same time as the shrink
+      '<', // Start at the same time as the shrink
     );
 
     // Reveal Marquee during shrink
@@ -173,9 +164,9 @@ export const ImageSequence = ({
         opacity: 1,
         scale: 1,
         duration: 0.5,
-        ease: "power2.out",
+        ease: 'power2.out',
       },
-      "<",
+      '<',
     );
 
     // Infinite Marquee Movement
@@ -186,14 +177,14 @@ export const ImageSequence = ({
         gsap.set(row, { xPercent: -50 });
         gsap.to(row, {
           xPercent: 0,
-          ease: "none",
+          ease: 'none',
           duration: 80,
           repeat: -1,
         });
       } else {
         gsap.to(row, {
           xPercent: -50,
-          ease: "none",
+          ease: 'none',
           duration: 80,
           repeat: -1,
         });
@@ -213,7 +204,7 @@ export const ImageSequence = ({
     const canvas = canvasRef.current;
     if (!canvas || !images[currentFrame]) return;
 
-    const context = canvas.getContext("2d");
+    const context = canvas.getContext('2d');
     if (!context) return;
 
     const img = images[currentFrame];
@@ -251,12 +242,11 @@ export const ImageSequence = ({
 
     render();
 
-    window.addEventListener("resize", render);
-    return () => window.removeEventListener("resize", render);
+    window.addEventListener('resize', render);
+    return () => window.removeEventListener('resize', render);
   }, [currentFrame, images, isLoaded]);
 
-  const marqueeText =
-    "KONIG URBAN SERIES STASIS MK.I ADVANCED GEAR ENGINEERED TO ENDURE · ";
+  const marqueeText = 'KONIG URBAN SERIES STASIS MK.I ADVANCED GEAR ENGINEERED TO ENDURE · ';
 
   return (
     <section ref={containerRef} className={styles.container}>
@@ -288,40 +278,28 @@ export const ImageSequence = ({
             TO ENDURE
           </h2>
           <p className={styles.desc}>
-            Created for the most extreme environments on the planet. Merging
-            high-performance materials with urban aesthetics.
+            Created for the most extreme environments on the planet. Merging high-performance
+            materials with urban aesthetics.
           </p>
         </div>
 
         {/* Technical Data Points */}
-        <div
-          className={`${styles.floatingText} ${styles.right}`}
-          style={{ top: "20%" }}
-        >
+        <div className={`${styles.floatingText} ${styles.right}`} style={{ top: '20%' }}>
           <span className={styles.floatingLabel}>CHASSIS // STASIS MK.I</span>
           <span className={styles.floatingValue}>CARBON REINFORCED</span>
         </div>
 
-        <div
-          className={`${styles.floatingText} ${styles.left}`}
-          style={{ top: "65%" }}
-        >
+        <div className={`${styles.floatingText} ${styles.left}`} style={{ top: '65%' }}>
           <span className={styles.floatingLabel}>THERMAL THRESHOLD</span>
           <span className={styles.floatingValue}>OPERATIONAL -45°C</span>
         </div>
 
-        <div
-          className={`${styles.floatingText} ${styles.right}`}
-          style={{ top: "70%" }}
-        >
+        <div className={`${styles.floatingText} ${styles.right}`} style={{ top: '70%' }}>
           <span className={styles.floatingLabel}>ARTICULATION</span>
           <span className={styles.floatingValue}>KINETIC FLEX SYSTEM</span>
         </div>
 
-        <div
-          className={`${styles.floatingText} ${styles.left}`}
-          style={{ top: "15%" }}
-        >
+        <div className={`${styles.floatingText} ${styles.left}`} style={{ top: '15%' }}>
           <span className={styles.floatingLabel}>ION-SHIELD</span>
           <span className={styles.floatingValue}>HYDROPHOBIC: MAX</span>
         </div>

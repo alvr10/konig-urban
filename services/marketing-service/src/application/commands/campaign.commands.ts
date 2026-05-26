@@ -1,8 +1,4 @@
-import {
-  AddCampaignTargetDto,
-  CreateCampaignDto,
-  UpdateCampaignDto,
-} from '../dtos/campaign.dto';
+import { AddCampaignTargetDto, CreateCampaignDto, UpdateCampaignDto } from '../dtos/campaign.dto';
 
 export class CreateCampaignCommand {
   constructor(public readonly payload: CreateCampaignDto) {}

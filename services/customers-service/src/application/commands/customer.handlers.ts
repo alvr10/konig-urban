@@ -2,15 +2,12 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { PrismaService } from '../../infrastructure/database/prisma.service';
 
-import {
-  UpdateCustomerByCrmCommand,
-  UpdateMeCommand,
-} from './customer.commands';
+import { UpdateCustomerByCrmCommand, UpdateMeCommand } from './customer.commands';
 
 @CommandHandler(UpdateMeCommand)
 @Injectable()
 export class UpdateMeHandler implements ICommandHandler<UpdateMeCommand> {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   async execute(command: UpdateMeCommand) {
     const { customerId, payload } = command;
@@ -37,9 +34,8 @@ export class UpdateMeHandler implements ICommandHandler<UpdateMeCommand> {
 
 @CommandHandler(UpdateCustomerByCrmCommand)
 @Injectable()
-export class UpdateCustomerByCrmHandler
-  implements ICommandHandler<UpdateCustomerByCrmCommand> {
-  constructor(private readonly prisma: PrismaService) { }
+export class UpdateCustomerByCrmHandler implements ICommandHandler<UpdateCustomerByCrmCommand> {
+  constructor(private readonly prisma: PrismaService) {}
 
   async execute(command: UpdateCustomerByCrmCommand) {
     const { customerId, payload } = command;

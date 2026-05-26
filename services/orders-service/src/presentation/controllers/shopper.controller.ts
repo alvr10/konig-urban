@@ -2,7 +2,10 @@ import { Body, Controller, Get, Param, Post, Headers } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { CreateOrderDto } from '../../application/dtos/orders.dtos';
 import { CreateOrderCommand } from '../../application/commands/orders.commands';
-import { GetOrderDetailQuery, GetShopperOrdersQuery } from '../../application/queries/orders.queries';
+import {
+  GetOrderDetailQuery,
+  GetShopperOrdersQuery,
+} from '../../application/queries/orders.queries';
 
 @Controller()
 export class ShopperOrderController {

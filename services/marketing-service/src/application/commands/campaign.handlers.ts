@@ -10,9 +10,8 @@ import { CampaignStatus, CampaignType } from '../dtos/campaign.dto';
 import { NotFoundException } from '@nestjs/common';
 
 @CommandHandler(CreateCampaignCommand)
-export class CreateCampaignHandler
-  implements ICommandHandler<CreateCampaignCommand> {
-  constructor(private readonly prisma: PrismaService) { }
+export class CreateCampaignHandler implements ICommandHandler<CreateCampaignCommand> {
+  constructor(private readonly prisma: PrismaService) {}
 
   async execute(command: CreateCampaignCommand) {
     const { payload } = command;
@@ -31,9 +30,8 @@ export class CreateCampaignHandler
 }
 
 @CommandHandler(UpdateCampaignCommand)
-export class UpdateCampaignHandler
-  implements ICommandHandler<UpdateCampaignCommand> {
-  constructor(private readonly prisma: PrismaService) { }
+export class UpdateCampaignHandler implements ICommandHandler<UpdateCampaignCommand> {
+  constructor(private readonly prisma: PrismaService) {}
 
   async execute(command: UpdateCampaignCommand) {
     const { campaignId, payload } = command;
@@ -58,9 +56,8 @@ export class UpdateCampaignHandler
 }
 
 @CommandHandler(AddCampaignTargetCommand)
-export class AddCampaignTargetHandler
-  implements ICommandHandler<AddCampaignTargetCommand> {
-  constructor(private readonly prisma: PrismaService) { }
+export class AddCampaignTargetHandler implements ICommandHandler<AddCampaignTargetCommand> {
+  constructor(private readonly prisma: PrismaService) {}
 
   async execute(command: AddCampaignTargetCommand) {
     const { campaignId, payload } = command;
@@ -86,7 +83,7 @@ export class AddCampaignTargetHandler
 
 @CommandHandler(SendCampaignCommand)
 export class SendCampaignHandler implements ICommandHandler<SendCampaignCommand> {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   async execute(command: SendCampaignCommand) {
     const { campaignId } = command;

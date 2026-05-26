@@ -1,12 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  Patch,
-  Post,
-  Query,
-} from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { PrismaService } from '../../infrastructure/database/prisma.service';
 
@@ -29,15 +21,14 @@ export class ProductionController {
   constructor(
     private readonly commandBus: CommandBus,
     private readonly prisma: PrismaService,
-  ) { }
+  ) {}
 
   @Get('suppliers')
   async getSuppliers(@Query() filters: SupplierFilterDto) {
     return this.prisma.proveedor.findMany({
       where: {
         tipo: filters.type,
-        activo:
-          filters.active !== undefined ? filters.active === 'true' : undefined,
+        activo: filters.active !== undefined ? filters.active === 'true' : undefined,
       },
       orderBy: {
         createdAt: 'desc',
@@ -71,10 +62,7 @@ export class ProductionController {
   }
 
   @Patch('purchase-orders/:orderId')
-  async updatePurchaseOrder(
-    @Param('orderId') orderId: string,
-    @Body() body: any,
-  ) {
+  async updatePurchaseOrder(@Param('orderId') orderId: string, @Body() body: any) {
     return this.commandBus.execute(new UpdatePurchaseOrderCommand(orderId, body));
   }
 

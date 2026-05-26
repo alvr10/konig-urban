@@ -1,11 +1,4 @@
-import {
-  IsBoolean,
-  IsBooleanString,
-  IsEmail,
-  IsEnum,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { IsBoolean, IsBooleanString, IsEmail, IsEnum, IsOptional, IsString } from 'class-validator';
 
 export enum CustomerType {
   ESTANDAR = 'estandar',

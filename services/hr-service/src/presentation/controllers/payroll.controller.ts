@@ -1,6 +1,9 @@
 import { Controller, Get, Post, Param, Query } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
-import { GenerateMonthlyPayrollCommand, PayPayrollCommand } from '../../application/commands/payroll.commands';
+import {
+  GenerateMonthlyPayrollCommand,
+  PayPayrollCommand,
+} from '../../application/commands/payroll.commands';
 import { GetPayrollRecordsQuery } from '../../application/queries/payroll.queries';
 
 @Controller('payroll')

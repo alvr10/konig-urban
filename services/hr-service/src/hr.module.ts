@@ -5,15 +5,18 @@ import { EmployeeController } from './presentation/controllers/employee.controll
 import { PayrollController } from './presentation/controllers/payroll.controller';
 import { DepartmentController } from './presentation/controllers/department.controller';
 import { CreateEmployeeHandler } from './application/commands/employee.handlers';
-import { GenerateMonthlyPayrollHandler, PayPayrollHandler } from './application/commands/payroll.handlers';
-import { GetDepartmentsHandler, GetEmployeeDetailHandler, GetEmployeesHandler } from './application/queries/hr.handlers';
-import { GetPayrollRecordsHandler } from './application/queries/payroll.handlers';
-
-const CommandHandlers = [
-  CreateEmployeeHandler,
+import {
   GenerateMonthlyPayrollHandler,
   PayPayrollHandler,
-];
+} from './application/commands/payroll.handlers';
+import {
+  GetDepartmentsHandler,
+  GetEmployeeDetailHandler,
+  GetEmployeesHandler,
+} from './application/queries/hr.handlers';
+import { GetPayrollRecordsHandler } from './application/queries/payroll.handlers';
+
+const CommandHandlers = [CreateEmployeeHandler, GenerateMonthlyPayrollHandler, PayPayrollHandler];
 
 const QueryHandlers = [
   GetEmployeesHandler,

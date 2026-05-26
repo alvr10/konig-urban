@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "format": "prettier --write \"src/**/*.{ts,tsx,css}\""
   },
   "dependencies": {
     "gsap": "^3.14.2",
@@ -23,6 +24,11 @@
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
     "tailwindcss": "^4",
-    "typescript": "^5"
-  }
+    "typescript": "^5",
+    "@konig/config-typescript": "workspace:*",
+    "@konig/config-eslint": "workspace:*",
+    "@konig/config-prettier": "workspace:*",
+    "prettier": "^3.0.0"
+  },
+  "prettier": "@konig/config-prettier"
 }

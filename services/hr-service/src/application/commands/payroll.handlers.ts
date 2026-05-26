@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { GenerateMonthlyPayrollCommand, PayPayrollCommand } from './payroll.commands';
 import { PrismaService } from '../../infrastructure/database/prisma.service';
-import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common';
 
 @CommandHandler(GenerateMonthlyPayrollCommand)
 export class GenerateMonthlyPayrollHandler implements ICommandHandler<GenerateMonthlyPayrollCommand> {
@@ -22,7 +22,7 @@ export class GenerateMonthlyPayrollHandler implements ICommandHandler<GenerateMo
     const generatedPayrolls = [];
 
     // Simple flat deduction rate
-    const DEDUCTION_RATE = 0.20;
+    const DEDUCTION_RATE = 0.2;
 
     for (const emp of activeEmployees) {
       const salarioBruto = emp.salario;

@@ -1,18 +1,13 @@
-"use client";
+'use client';
 
-import { useLayoutEffect, useRef } from "react";
-import Image from "next/image";
-import styles from "./footer.module.css";
-import { IconButton } from "../icon-button/icon-button";
-import { NavLink } from "../nav-link/nav-link";
-import {
-  InstagramIcon,
-  FacebookIcon,
-  TwitterIcon,
-  ArrowRightIcon,
-} from "../icons";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useLayoutEffect, useRef } from 'react';
+import Image from 'next/image';
+import styles from './footer.module.css';
+import { IconButton } from '../icon-button/icon-button';
+import { NavLink } from '../nav-link/nav-link';
+import { InstagramIcon, FacebookIcon, TwitterIcon, ArrowRightIcon } from '../icons';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -32,43 +27,43 @@ export function Footer({ isLoading = false }: FooterProps) {
     if (!footer) return;
 
     // 1. Immediate Splitting
-    if (bigTextRef.current && !bigTextRef.current.querySelector(".char")) {
+    if (bigTextRef.current && !bigTextRef.current.querySelector('.char')) {
       const text = bigTextRef.current.innerText;
       bigTextRef.current.innerHTML = Array.from(text)
         .map((char) =>
-          char === " "
+          char === ' '
             ? `<span style="display:inline-block; width:0.3em">&nbsp;</span>`
             : `<span class="char" style="display:inline-block; opacity:0; transform:translateY(100%)">${char}</span>`,
         )
-        .join("");
+        .join('');
     }
 
     const ctx = gsap.context(() => {
-      const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()";
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()';
       const intervals: NodeJS.Timeout[] = [];
 
       const scrambleText = (el: HTMLElement) => {
-        if (el.getAttribute("data-scrambling") === "true") return;
-        const originalText = el.getAttribute("data-original") || el.innerText;
-        if (!el.getAttribute("data-original")) {
-          el.setAttribute("data-original", originalText);
+        if (el.getAttribute('data-scrambling') === 'true') return;
+        const originalText = el.getAttribute('data-original') || el.innerText;
+        if (!el.getAttribute('data-original')) {
+          el.setAttribute('data-original', originalText);
         }
-        el.setAttribute("data-scrambling", "true");
+        el.setAttribute('data-scrambling', 'true');
         const maxIterations = 8;
         let iterations = 0;
         const interval = setInterval(() => {
           el.innerText = Array.from(originalText)
             .map((char, i) => {
-              if (char === " ") return " ";
-              if (iterations >= maxIterations) return originalText[i] || "";
+              if (char === ' ') return ' ';
+              if (iterations >= maxIterations) return originalText[i] || '';
               return chars[Math.floor(Math.random() * chars.length)];
             })
-            .join("");
+            .join('');
           iterations++;
           if (iterations >= maxIterations) {
             clearInterval(interval);
             el.innerText = originalText;
-            el.removeAttribute("data-scrambling");
+            el.removeAttribute('data-scrambling');
           }
         }, 40);
         intervals.push(interval);
@@ -89,11 +84,11 @@ export function Footer({ isLoading = false }: FooterProps) {
           scale: 1,
           duration: 1.2,
           stagger: 0.2,
-          ease: "expo.out",
+          ease: 'expo.out',
           scrollTrigger: {
             trigger: footer, // Use the footer ref itself as trigger
-            start: "top bottom-=100",
-            toggleActions: "play none none none",
+            start: 'top bottom-=100',
+            toggleActions: 'play none none none',
             fastScrollEnd: true,
             onEnter: () => {
               // Crucial for pages with pinned sequences above
@@ -109,16 +104,16 @@ export function Footer({ isLoading = false }: FooterProps) {
 
       // 3. Big Text Reveal
       if (bigTextRef.current) {
-        gsap.to(bigTextRef.current.querySelectorAll(".char"), {
+        gsap.to(bigTextRef.current.querySelectorAll('.char'), {
           opacity: 1,
           y: 0,
           duration: 1.2,
           stagger: 0.01,
-          ease: "expo.out",
+          ease: 'expo.out',
           scrollTrigger: {
             trigger: bigTextRef.current,
-            start: "top bottom-=50",
-            toggleActions: "play none none none",
+            start: 'top bottom-=50',
+            toggleActions: 'play none none none',
           },
         });
       }
@@ -163,15 +158,10 @@ export function Footer({ isLoading = false }: FooterProps) {
           <div className={styles.columnTitle}>STAY UPDATED</div>
           <div className={styles.newsletter}>
             <p className={styles.infoText}>
-              Join the transmission for exclusive series drops and tactical
-              updates.
+              Join the transmission for exclusive series drops and tactical updates.
             </p>
             <div className={styles.inputWrapper}>
-              <input
-                type="email"
-                placeholder="EMAIL_ADDRESS"
-                className={styles.input}
-              />
+              <input type="email" placeholder="EMAIL_ADDRESS" className={styles.input} />
               <button className={styles.submitBtn}>
                 <ArrowRightIcon />
               </button>

@@ -4,7 +4,7 @@ import * as swaggerUi from 'swagger-ui-express';
 import { resolve } from 'path';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 import { AppModule } from './app.module';
-import { PinoLoggerService, HttpLoggerMiddleware, ConsulService } from '@konig/shared';
+import { PinoLoggerService, HttpLoggerMiddleware, ConsulService } from '@konig/core-backend';
 import { jwtAuthMiddleware } from './middleware/jwt-auth.middleware';
 
 async function bootstrap() {
@@ -77,7 +77,7 @@ async function bootstrap() {
 
     const [_, serviceName] = entry;
     const instances = await consulService.resolve(serviceName);
-    
+
     if (!instances || instances.length === 0) {
       return res.status(503).json({ error: `${serviceName} unavailable` });
     }
@@ -96,8 +96,8 @@ async function bootstrap() {
         error: (err, _req, res: any) => {
           console.error(`[Proxy] Error: ${err.message}`);
           res.status(502).json({ error: 'Service unavailable' });
-        }
-      }
+        },
+      },
     })(req, res, next);
   });
 
