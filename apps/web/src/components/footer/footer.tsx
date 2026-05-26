@@ -174,10 +174,10 @@ export function Footer({ isLoading = false }: FooterProps) {
           <div className={styles.columnTitle}>DIRECTORY</div>
           <nav className={styles.footerNav}>
             <NavLink href="#collection">COLLECTION</NavLink>
-            <NavLink href="#">PUFFERS</NavLink>
-            <NavLink href="#">COOKIES</NavLink>
-            <NavLink href="#">PRIVACY</NavLink>
-            <NavLink href="#">TERMS</NavLink>
+            <NavLink href="/politica-cookies">COOKIES</NavLink>
+            <NavLink href="/politica-privacidad">PRIVACY</NavLink>
+            <NavLink href="/terminos-condiciones">TERMS</NavLink>
+            <NavLink href="/aviso-legal">LEGAL</NavLink>
           </nav>
         </div>
 
